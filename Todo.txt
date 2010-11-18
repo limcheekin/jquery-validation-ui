@@ -1,0 +1,4 @@
+1. Allowed disabled validation for some fields, 
+default is apply client side validation for all fields.
+2. Test for complex object support such as an order have
+shipping and billing address.
