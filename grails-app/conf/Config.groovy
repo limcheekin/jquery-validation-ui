@@ -50,7 +50,9 @@ jqueryValidationUi {
 		matches:"matches",
 		notEqual:"notEqual",
 		url:"url",
-		nullable:"required"
+		nullable:"required",
+		unique:"unique",
+		validator:"validator"
 	]
 	
 	// Long, Integer, Short, Float, Double, BigDecimal

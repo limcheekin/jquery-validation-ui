@@ -48,3 +48,48 @@ jQuery.validator.addMethod("rangeDate", function(value, element, params) {
 	var dateValue = new Date(value)
 	return this.optional(element) || dateValue >= params[0] && dateValue <= params[1];
 }, jQuery.validator.format('The date must be between {0} and {1}.'));
+
+//http://stackoverflow.com/questions/976384/jquery-validator-addmethod-custom-message
+jQuery.validator.addMethod("unique", function(value, element, params) { 
+    var validator = this;
+    params.data[element.name] = value;
+    params.data['constraint'] = 'unique';
+    $.post(params.url, params.data, function(response) {
+    	if (response == 'true'){ return true; }
+    	else {
+    		var errors = {};
+    		errors[element.name] =  response;
+    		validator.showErrors(errors);
+    		return false;
+    	}
+    }, 'text');
+}, '');
+
+jQuery.validator.addMethod("validator", function(value, element, params) { 
+    var validator = this;
+    params.data[element.name] = value;
+    params.data['constraint'] = 'validator';
+    $.post(params.url, params.data, function(response) {
+    	if (response == 'true'){ return true; }
+    	else {
+    		var errors = {};
+    		errors[element.name] =  response;
+    		validator.showErrors(errors);
+    		return false;
+    	}
+    }, 'text');
+}, '');
+
+jQuery.validator.addMethod("custom", function(value, element, params) { 
+    var validator = this;
+    params.data[element.name] = value;
+    $.post(params.url, params.data, function(response) {
+    	if (response == 'true'){ return true; }
+    	else {
+    		var errors = {};
+    		errors[element.name] =  response;
+    		validator.showErrors(errors);
+    		return false;
+    	}
+    }, 'text');
+}, '');

@@ -14,7 +14,6 @@
  */
 package org.grails.jquery.validation.ui
 
-import org.codehaus.groovy.grails.validation.ConstrainedPropertyBuilder
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 import grails.util.GrailsNameUtils
 
@@ -45,15 +44,15 @@ class JQueryValidationUiTagLib {
         min: "default.invalid.min.message",
         maxSize: "default.invalid.max.size.message",
         minSize: "default.invalid.min.size.message",
-        validator: "default.invalid.validator.message",
         inList: "default.not.inlist.message",
         blank: "default.blank.message",
         notEqual: "default.not.equal.message",
-        nullable: "default.null.message",
-        unique: "default.not.unique.message"
+        nullable: "default.null.message"
     ]
 	
     static final String TAG_ERROR_PREFIX = "Tag [jqvalui:renderValidationScript] Error: "
+	
+	  def jqueryValidationService
 	
     def resources = { attrs, body ->
         def packed = grailsApplication.config.jqueryValidationUi.qTip.get("packed", true)
@@ -75,7 +74,7 @@ class JQueryValidationUiTagLib {
             throwTagError("${TAG_ERROR_PREFIX}Invalid validatableClass, $validatableClassName not found!")
             return
         }
-        def constraintsProperties = getConstraintsProperties(validatableClass)
+        def constraintsProperties = jqueryValidationService.getConstraintsProperties(validatableClass)
         out << '<script type="text/javascript">\n'
         out << """\$(function() {
 var myForm = \$('form:first');
@@ -113,7 +112,7 @@ errorPlacement: function(error, element)
 rules: {
 """
         constraintsProperties.each { k, constrainedProperty  ->
-            out << createJavaScriptConstraints(constrainedProperty)
+            out << createJavaScriptConstraints(validatableClass, constrainedProperty)
         }
         out << "},\n" // end rules
         out << "messages: {\n"
@@ -124,23 +123,6 @@ rules: {
         out << "});\n"
         out << "});\n"
         out << "</script>\n"
-    }
-	
-    private Map getConstraintsProperties(Class validatableClass) {
-        def constraintsProperties
-        if (!validatableClass.constraints) {
-            throwTagError("${TAG_ERROR_PREFIX}Invalid validatableClass, constraints closure undefined!")
-        }
-        if (validatableClass.constraints instanceof Closure) {
-            def validationClosure = validatableClass.constraints
-            def constrainedPropertyBuilder = new ConstrainedPropertyBuilder(validatableClass.newInstance())
-            validationClosure.setDelegate(constrainedPropertyBuilder)
-            validationClosure()
-            constrainedProperties = constrainedPropertyBuilder.constrainedProperties
-        } else {
-            constraintsProperties = validatableClass.constraints
-        }
-        return constraintsProperties
     }
 	
     private Map getConstraintsMap(Class propertyType) {
@@ -157,14 +139,26 @@ rules: {
         return constraintsMap
     }
 	
-    private String createJavaScriptConstraints(def constrainedProperty) {
+    private String createJavaScriptConstraints(Class validatableClass, def constrainedProperty) {
         String javaScriptConstraints = "${constrainedProperty.propertyName}: {\n"
         def constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
         String javaScriptConstraint
 		
-        if (constrainedProperty.propertyType == Date) {
-            javaScriptConstraints += "\tdate: true,\n"
-        }
+        switch (constrainedProperty.propertyType) {
+        case Date:
+		      javaScriptConstraints += "\tdate: true,\n"
+			    break
+				case Long:
+				case Integer: 
+				case Short:
+				  javaScriptConstraints += "\tdigits: true,\n"
+				  break
+				case Float:
+				case Double: 
+				case BigDecimal:
+				  javaScriptConstraints += "\tnumber: true,\n"
+				  break		
+		        }
 		
         def constraintNames = constrainedProperty.appliedConstraints.collect { return it.name }
         if (constraintNames.contains("blank") && constraintNames.contains("nullable")) {
@@ -234,9 +228,14 @@ rules: {
                     def size = constrainedProperty.size
                     javaScriptConstraints += "\t${javaScriptConstraint}: [${size.from}, ${size.to}],\n"
                     break
+										case "unique":
+										case "validator":
+										javaScriptConstraints += createRemoteJavaScriptConstraints(constraintName, validatableClass.name, constrainedProperty.propertyName)
+									  break
                 }
             } else {
-                println "${constraintName} constraint not found in the constraintsMap, remote validation"
+                println "${constraintName} constraint not found in the constraintsMap, use custom constraint remote validation"
+								javaScriptConstraints += createRemoteJavaScriptConstraints(constraintName, validatableClass.name, constrainedProperty.propertyName)
             }
         }
         javaScriptConstraints += "},\n"
@@ -244,6 +243,19 @@ rules: {
         return javaScriptConstraints
     }
 
+	  private String createRemoteJavaScriptConstraints(String constraintName, String validatableClassName, String propertyName) {
+		  String remoteJavaScriptConstraints = "\t${constraintName.equals('unique') || constraintName.equals('validator')?constraintName:'custom'}: {\n" +
+		  "\turl: '${request.contextPath}/JQueryRemoteValidator/validate',\n" +
+		  "\ttype: 'post',\n" +
+			"\tdata: {\n" +
+			"\t\tvalidatableClass: '${validatableClassName}',\n" +
+			"\t\tproperty: '${propertyName}',\n" 
+			if (!constraintName.equals('unique') && !constraintName.equals('validator')) {
+			  remoteJavaScriptConstraints += "\t\tconstraint: '${constraintName}'\n" 
+			}
+			remoteJavaScriptConstraints += "\t}\n\t},\n"
+	  }
+	  
     private String createJavaScriptMessages(Class validatableClass, def constrainedProperty) {
         def constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
         def args = []
@@ -258,7 +270,7 @@ rules: {
             javaScriptMessage = constraintsMap[constraintName]
             if (javaScriptMessage) {
                 args.clear()
-                args = [constrainedProperty.propertyName, validatableClass.simpleName]
+                args = [constrainedProperty.propertyName, validatableClass]
                 switch (constraintName) {
                     case "nullable":
                     case "blank":
@@ -295,27 +307,26 @@ rules: {
                     javaScriptMessages += "\t${javaScriptMessage}: function() { return '${getMessage(validatableClass, constrainedProperty.propertyName, args, constraintName)}'; },\n"
                     break
                 }
-            } else {
-                javaScriptMessage = "remote"
-                javaScriptMessages += "\t${javaScriptMessage}: function() { return '${getMessage(validatableClass, constrainedProperty.propertyName, args, constraintName)}'; },\n"
             }
 				
         }
         javaScriptMessages += "},\n"
     }
-    private String getMessage(Class validateableClass, String propertyName, def args, String constraintName) {
+	
+    private String getMessage(Class validatableClass, String propertyName, def args, String constraintName) {
         def messageSource = grailsAttributes.getApplicationContext().getBean("messageSource")
         def locale = RCU.getLocale(request)
-        def code = "${validateableClass.name}.${propertyName}.${constraintName}"
+        def code = "${validatableClass.name}.${propertyName}.${constraintName}"
 		    def defaultMessage = "Error message for ${code} undefined."
 		    def message = messageSource.getMessage(code, args == null ? null : args.toArray(), null, locale)
+			
 			  if (!message) {
-				  code = "${GrailsNameUtils.getPropertyName(validateableClass)}.${propertyName}.${constraintName}"
+				  code = "${GrailsNameUtils.getPropertyName(validatableClass)}.${propertyName}.${constraintName}"
 				  message = messageSource.getMessage(code, args == null ? null : args.toArray(), null, locale)
 			  }
 			 if (!message) {
-		    code = DEFAULT_ERROR_MESSAGE_CODES_MAP[constraintName]
-        message = messageSource.getMessage(code, args == null ? null : args.toArray(), defaultMessage, locale)
+		      code = DEFAULT_ERROR_MESSAGE_CODES_MAP[constraintName]
+          message = messageSource.getMessage(code, args == null ? null : args.toArray(), defaultMessage, locale)
 			  }
 		   return message
     }

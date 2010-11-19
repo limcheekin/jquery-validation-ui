@@ -91,7 +91,18 @@ $(function() {
 					required:true,
 					date:true,
 					rangeDate: [new Date(2010, 10, 2), new Date(2010,11,12)]
-				},															
+				},				
+				title: {
+			       remote: {
+			          url: '${createLink(controller:'jQueryRemoteValidator', action:'validate')}',
+			          type: 'post',
+			          data: {
+			            validatableClass: 'org.grails.jquery.validation.ui.DummyDomain', 
+			            property: 'title', 
+			            constraint: 'blank'
+			                   } 
+			             }
+			      }															
 			},		
 			messages: {
 				email: {
@@ -150,15 +161,21 @@ $(function() {
 		<p>
 			<label for="testRangeDate">Test rangeDate *</label>
 			<input id="testRangeDate" name="testRangeDate" class="ui-widget-content"/>
-		</p>								
+		</p>											
 		<p>
 			<button class="submit" type="submit">Submit</button>
 		</p>
 	</fieldset>
 </form>
 
-
-<a href="index.html">Back to main page</a>
+            <div id="controllerList" class="dialog">
+                <h2>Available Controllers:</h2>
+                <ul>
+                    <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
+                        <li class="controller"><g:link controller="${c.logicalPropertyName}">${c.fullName}</g:link></li>
+                    </g:each>
+                </ul>
+            </div>
 
 </body>
 </html>
