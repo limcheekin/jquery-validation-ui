@@ -100,7 +100,7 @@ $(function() {
 				},		
 				testMatches: {
 						required:'Please enter Test Matches', 
-						matches:'Please enter letter only'
+						matches:function(){ return 'Invalid value ' + $('#testMatches').val() + '! Please enter letter only, given format';}
 				}							
 			}		
 	});
@@ -113,8 +113,6 @@ $(function() {
 	
 });
 </script>
-
-<jqvalui:renderValidationScript validatableClass="org.grails.jquery.validation.ui.DummyDomain" />	
 
 </head>
 <body>

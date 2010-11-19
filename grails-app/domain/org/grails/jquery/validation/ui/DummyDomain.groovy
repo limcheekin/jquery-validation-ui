@@ -9,7 +9,7 @@ class DummyDomain {
    Integer age
    String creditCardNo
    String email
-   String url
+   String webAddress
    Integer inListInteger
    String letterOnly
    String notEqualABC
@@ -25,7 +25,7 @@ class DummyDomain {
 		age min: 18
 		creditCardNo creditCard: true
 		email email:true
-		url url:true
+		webAddress url:true, nullable:true
 		inListInteger inList:[10,11,12]
 		letterOnly matches:"[a-zA-Z]+"
 		notEqualABC notEqual:"ABC"

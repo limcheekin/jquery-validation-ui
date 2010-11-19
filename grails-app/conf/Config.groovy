@@ -59,7 +59,8 @@ jqueryValidationUi {
 		max:"max",
 		range:"range",
 		notEqual:"notEqual",
-		nullable:"required"
+		nullable:"required",
+		inList:"inList"
 	]
 	
 	CollectionConstraintsMap = [
@@ -74,7 +75,8 @@ jqueryValidationUi {
 		max:"maxDate",
 		range:"rangeDate",
 		notEqual:"notEqual",
-		nullable:"required"
+		nullable:"required",
+		inList:"inList"
 	]
 }
 
