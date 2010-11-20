@@ -4,6 +4,7 @@ import grails.test.*
 import org.codehaus.groovy.grails.validation.ConstrainedPropertyBuilder
 import grails.util.GrailsNameUtils
 import org.springframework.validation.BeanPropertyBindingResult
+import java.lang.reflect.Modifier
 
 class ConstraintsRetrieveTests extends GrailsUnitTestCase {
 	def grailsApplication
@@ -20,8 +21,8 @@ class ConstraintsRetrieveTests extends GrailsUnitTestCase {
 		def domainClass = grailsApplication.classLoader.loadClass("org.grails.jquery.validation.ui.DummyDomain")
 		assertNotNull domainClass
 		assertNotNull domainClass.constraints
-		def excludedDeclaredFields = ["id", "version", "metaClass", "constraints", "mapping"]
-		def declaredFields = domainClass.declaredFields.findAll { it.name.indexOf('$') == -1 && it.name.indexOf('__') == -1 && !excludedDeclaredFields.contains(it.name)}
+		def excludedDeclaredFields = ["id", "version", "metaClass"]
+		def declaredFields = domainClass.declaredFields.findAll { it.name.indexOf('$') == -1 && it.name.indexOf('__') == -1 && !excludedDeclaredFields.contains(it.name) && it.modifiers != Modifier.STATIC}
 		declaredFields.each { println it.name }
 		domainClass.constraints.each { k, v ->
 			println "k=$k"

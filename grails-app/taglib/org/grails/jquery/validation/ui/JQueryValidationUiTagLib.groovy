@@ -16,7 +16,6 @@ package org.grails.jquery.validation.ui
 
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 import grails.util.GrailsNameUtils
-
 /**
  *
  * @author <a href='mailto:limcheekin@vobject.com'>Lim Chee Kin</a>
@@ -25,14 +24,6 @@ import grails.util.GrailsNameUtils
  */
 class JQueryValidationUiTagLib {
     static namespace = "jqvalui"
-    static final EXCLUDED_DECLARED_FIELDS = [
-        "id",
-        "version",
-        "metaClass",
-        "constraints",
-        "mapping",
-        "embedded"
-    ]
     static final DEFAULT_ERROR_MESSAGE_CODES_MAP = [
         matches: "default.doesnt.match.message",
         url: "default.invalid.url.message",
@@ -52,6 +43,8 @@ class JQueryValidationUiTagLib {
 	
     static final String TAG_ERROR_PREFIX = "Tag [jqvalui:renderValidationScript] Error: "
 	
+	  static final String TYPE_MISMATCH_MESSAGE_PREFIX = "typeMismatch."
+	  
 	  def jqueryValidationService
 	
     def resources = { attrs, body ->
@@ -151,6 +144,7 @@ rules: {
 				case Long:
 				case Integer: 
 				case Short:
+				case BigInteger:
 				  javaScriptConstraints += "\tdigits: true,\n"
 				  break
 				case Float:
@@ -160,10 +154,7 @@ rules: {
 				  break		
 		        }
 		
-        def constraintNames = constrainedProperty.appliedConstraints.collect { return it.name }
-        if (constraintNames.contains("blank") && constraintNames.contains("nullable")) {
-            constraintNames.remove("nullable")
-        }
+        def constraintNames = getConstraintNames(constrainedProperty)
         constraintNames.each { constraintName ->
             javaScriptConstraint = constraintsMap[constraintName]
             if (javaScriptConstraint) {
@@ -239,7 +230,6 @@ rules: {
             }
         }
         javaScriptConstraints += "},\n"
-        // println "constrainedProperty.isPassword() = ${constrainedProperty.isPassword()}"
         return javaScriptConstraints
     }
 
@@ -256,16 +246,38 @@ rules: {
 			remoteJavaScriptConstraints += "\t}\n\t},\n"
 	  }
 	  
+	  private List getConstraintNames(def constrainedProperty) {
+		  def constraintNames = constrainedProperty.appliedConstraints.collect { return it.name }
+		  if (constraintNames.contains("blank") && constraintNames.contains("nullable")) {
+			  constraintNames.remove("nullable") // blank constraint take precedence
+		    }
+	    return constraintNames
+	  }
+	  
     private String createJavaScriptMessages(Class validatableClass, def constrainedProperty) {
         def constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
         def args = []
         String javaScriptMessages = "${constrainedProperty.propertyName}: {\n"
         String javaScriptMessage
-        def constraintNames = constrainedProperty.appliedConstraints.collect { return it.name }
-        if (constraintNames.contains("blank") && constraintNames.contains("nullable")) {
-            constraintNames.remove("nullable")
-        }
+        def constraintNames = getConstraintNames(constrainedProperty)
 
+		switch (constrainedProperty.propertyType) {
+			case Date:
+			      javaScriptMessages += "\tdate: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}',\n"
+					  break
+					case Long:
+					case Integer:
+					case Short:
+					case BigInteger:
+					  javaScriptMessages += "\tdigits: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}',\n"
+					  break
+					case Float:
+					case Double:
+					case BigDecimal:
+					  javaScriptMessages += "\tnumber: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}',\n"
+					  break
+					}
+		
         constraintNames.each { constraintName ->
             javaScriptMessage = constraintsMap[constraintName]
             if (javaScriptMessage) {
@@ -330,6 +342,14 @@ rules: {
 			  }
 		   return message
     }
+	
+	private String getTypeMismatchMessage(Class propertyType, String propertyName) {
+		def messageSource = grailsAttributes.getApplicationContext().getBean("messageSource")
+		def locale = RCU.getLocale(request)
+		def code = "${TYPE_MISMATCH_MESSAGE_PREFIX}${propertyType.name}"
+		def defaultMessage = "Error message for ${code} undefined."
+		return messageSource.getMessage(code, [propertyName].toArray(), defaultMessage, locale)
+	}
 }
 
 
