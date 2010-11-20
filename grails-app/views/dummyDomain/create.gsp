@@ -10,7 +10,7 @@
         <g:javascript library="jquery" plugin="jquery"/>
         <jqval:resources />
         <jqvalui:resources />
-        <jqvalui:renderValidationScript validatableClass="org.grails.jquery.validation.ui.DummyDomain" />	                
+        <jqvalui:renderValidationScript for="org.grails.jquery.validation.ui.DummyDomain"  />	                
     </head>
     <body>
         <div class="nav">

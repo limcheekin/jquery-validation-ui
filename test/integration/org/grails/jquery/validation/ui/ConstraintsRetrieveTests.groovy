@@ -1,13 +1,13 @@
 package org.grails.jquery.validation.ui
 
 import grails.test.*
-import org.codehaus.groovy.grails.validation.ConstrainedPropertyBuilder
 import grails.util.GrailsNameUtils
 import org.springframework.validation.BeanPropertyBindingResult
-import java.lang.reflect.Modifier
+import org.springframework.util.ReflectionUtils
 
 class ConstraintsRetrieveTests extends GrailsUnitTestCase {
 	def grailsApplication
+	def jqueryValidationService
 	
 	protected void setUp() {
 		super.setUp()
@@ -19,41 +19,64 @@ class ConstraintsRetrieveTests extends GrailsUnitTestCase {
 	
 	void testRetrieveConstraintsFromDomainClass() {
 		def domainClass = grailsApplication.classLoader.loadClass("org.grails.jquery.validation.ui.DummyDomain")
-		assertNotNull domainClass
-		assertNotNull domainClass.constraints
-		def excludedDeclaredFields = ["id", "version", "metaClass"]
-		def declaredFields = domainClass.declaredFields.findAll { it.name.indexOf('$') == -1 && it.name.indexOf('__') == -1 && !excludedDeclaredFields.contains(it.name) && it.modifiers != Modifier.STATIC}
-		declaredFields.each { println it.name }
-		domainClass.constraints.each { k, v ->
-			println "k=$k"
-			println "v=$v"
-		}
+		def constrainedProperties = getConstrainedProperties(domainClass)
 		def domainInstance = domainClass.newInstance()
 		def errors = new BeanPropertyBindingResult(domainInstance, domainInstance.class.name)
-		domainClass.constraints["title"].messageSource = grailsApplication.mainContext.messageSource
-		domainClass.constraints["title"].validate(domainInstance, "Valid Title", errors) 
+		constrainedProperties["title"].messageSource = grailsApplication.mainContext.messageSource
+		constrainedProperties["title"].validate(domainInstance, "Valid Title", errors) 
 		assertTrue !hasError(domainClass, "title", "blank", errors)
 	}
 	
+	void testRetrieveConstraintsFromUserGroupClass() {
+		def domainClass = grailsApplication.classLoader.loadClass("org.grails.activiti.springsecurity.UserGroup")
+		def constrainedProperties = getConstrainedProperties(domainClass)
+	}
+	
+	void testRetrieveConstraintsFromPersonClass() {
+		def domainClass = grailsApplication.classLoader.loadClass("org.grails.jquery.validation.ui.Person")
+		def constrainedProperties = getConstrainedProperties(domainClass)
+		assertNotNull "findField(domainClass, 'homeAddress') not null", findField(domainClass,'homeAddress')
+		 
+		assertNotNull "findField(domainClass, 'homeAddress.code') not null", findField(domainClass,'homeAddress.code')
+		assertEquals (['homeAddress', 'workAddress'], domainClass.embedded)
+	}
+	
+	def findField(Class clazz, String name) {
+		def field
+		
+		if (name.indexOf('.') == -1) {
+			field = ReflectionUtils.findField(clazz, name)
+		} else {
+		  Class declaringClass = clazz
+			def fieldNames = name.split("\\.")
+			for (fieldName in fieldNames) {
+				println "${declaringClass.name}.${fieldName}"
+				field = ReflectionUtils.findField(declaringClass, fieldName)
+				if (!field) {
+					throw new IllegalArgumentException("Property $name invalid!")
+				}
+				declaringClass = field.type
+			}
+		}
+		return field
+	}
+  private Map getConstrainedProperties(Class validatableClass) {
+	  def constrainedProperties = jqueryValidationService.getConstrainedProperties(validatableClass)
+	  constrainedProperties.each { k, v ->
+		  println "k=$k"
+		  println "v=$v"
+	    }
+	  return constrainedProperties
+	 } 
+	
 	void testRetrieveConstraintsFromIndependentCommandClass() {
 		def commandClass = grailsApplication.classLoader.loadClass("org.grails.jquery.validation.ui.ProcessElementCommand")
-		assertNotNull commandClass
-		def validationClosure = commandClass.constraints
-		println "validationClosure instanceof Closure = ${(validationClosure instanceof Closure)}"
-		def constrainedPropertyBuilder = new ConstrainedPropertyBuilder(commandClass.newInstance())
-		validationClosure.setDelegate(constrainedPropertyBuilder)
-		validationClosure()
-		def constrainedProperties = constrainedPropertyBuilder.constrainedProperties
-		constrainedProperties.each { k, v ->
-			println "k=$k"
-			println "v=$v"
-		}
+		def constrainedProperties = getConstrainedProperties(commandClass)
 		def commandInstance = commandClass.newInstance()
 		def errors = new BeanPropertyBindingResult(commandInstance, commandInstance.class.name)
 		constrainedProperties["name"].messageSource = grailsApplication.mainContext.messageSource
 		constrainedProperties["name"].validate(commandInstance, "", errors)
 		assertTrue hasError(commandClass, "name", "blank", errors)
-
 	}
 	
 	void testRetrieveConstraintsFromCommandInControllerClass() {

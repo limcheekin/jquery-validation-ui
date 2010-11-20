@@ -35,8 +35,7 @@ jqueryValidationUi.qTip.packed = false
 
 /*
 * Grails constraints to JQuery Validation rules mapping for client side validation.
-* Constraints not found in the mapping will trigger remote validation,
-* except nullable:true is skip and nullable:false same with blank:false.
+* Constraint not found in the ConstraintsMap will trigger remote AJAX validation.
 */
 jqueryValidationUi {
 	StringConstraintsMap = [
@@ -55,21 +54,24 @@ jqueryValidationUi {
 		validator:"validator"
 	]
 	
-	// Long, Integer, Short, Float, Double, BigDecimal
+	// Long, Integer, Short, Float, Double, BigInteger, BigDecimal
 	NumberConstraintsMap = [
 		min:"min",
 		max:"max",
 		range:"range",
 		notEqual:"notEqual",
 		nullable:"required",
-		inList:"inList"
+		inList:"inList",
+		unique:"unique",
+		validator:"validator"
 	]
 	
 	CollectionConstraintsMap = [
 		minSize:"minlength",
 		maxSize:"maxlength",
 		size:"rangelength",
-		nullable:"required"
+		nullable:"required",
+		validator:"validator"
 	]
 	
 	DateConstraintsMap = [
@@ -78,7 +80,14 @@ jqueryValidationUi {
 		range:"rangeDate",
 		notEqual:"notEqual",
 		nullable:"required",
-		inList:"inList"
+		inList:"inList",
+		unique:"unique",
+		validator:"validator"
+	]
+	
+	ObjectConstraintsMap = [
+		nullable:"required",
+		validator:"validator"
 	]
 }
 

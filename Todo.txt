@@ -1,5 +1,3 @@
-1. Allowed disabled validation for some fields, 
-default is apply client side validation for all fields.
-2. Test for complex object support such as an order have
-shipping and billing address.
-3. Allow error messages display at top like Grails default
+1. Support error messages display at top like Grails default
+2. Configuration support for tooltip style.
+3. Customize scaffolding templates to support the new style of validation message

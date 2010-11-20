@@ -27,8 +27,8 @@ class JqueryValidationService {
 
     static transactional = false
 
-    Map getConstraintsProperties(Class validatableClass) {
-        def constraintsProperties
+    Map getConstrainedProperties(Class validatableClass) {
+        def constrainedProperties
         if (!validatableClass.constraints) {
            throw new NullPointerException("validatableClass.constraints is null!") 
         }
@@ -39,8 +39,8 @@ class JqueryValidationService {
             validationClosure()
             constrainedProperties = constrainedPropertyBuilder.constrainedProperties
         } else {
-            constraintsProperties = validatableClass.constraints
+            constrainedProperties = validatableClass.constraints
         }
-        return constraintsProperties
+        return constrainedProperties
     }
 }
