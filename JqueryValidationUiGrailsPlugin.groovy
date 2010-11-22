@@ -40,7 +40,7 @@ However, it is just server side validation solution, to build a comprehensive va
 and highly interactive web application it has one missing important piece... 
 Yes! It is client side validation solution that support all standard Grails constraints. 
 Similar grails plugins such as Javascript Validator and Remote Constraints attempt to address this problem, 
-but the outcome is less satisfactory in my opinion. I like the solution and demo in the blog post titled 
+but the outcome is less satisfactory in my opinion. I like the solution and demo published in the blog post titled 
 "A jQuery inline form validation, because validation is a mess", but unluckily it is not using the excellent 
 JQuery Validation plugin as it's validation engine, it had it's own solution known as jQuery Validation Engine. 
 

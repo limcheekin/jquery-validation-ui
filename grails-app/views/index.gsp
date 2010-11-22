@@ -6,7 +6,12 @@
 
 <g:javascript library="jquery" plugin="jquery"/>
 <jqval:resources />
-<jqvalui:resources />
+
+<!-- JS only -->
+<jqvalui:resources type="js"/>
+
+<!-- CSS only -->
+<jqvalui:resources type="css"/>
 
 <!-- JQuery UI -->
 <link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/cupertino/jquery-ui.css" />

@@ -51,14 +51,29 @@ class JQueryValidationUiTagLib {
     def jqueryValidationService
 	
     def resources = { attrs, body ->
-        def packed = grailsApplication.config.jqueryValidationUi.qTip.get("packed", true)
-        def url = g.resource(plugin:"jqueryValidationUi", dir:"js/qTip", file:"jquery.qtip.${packed?'pack.js':'js'}")
-        out << "<script type=\"text/javascript\" src=\"${url}\"></script>\n"
-        url = g.resource(plugin:"jqueryValidationUi", dir:"css/qTip", file:"jquery.qtip.css")
-        out << "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"${url}\" />\n"
-        url = g.resource(plugin:"jqueryValidationUi", dir:"js/jquery-validation-ui", file:"grails-validation-methods.js")
-        out << "<script type=\"text/javascript\" src=\"${url}\"></script>\n"
+		    String type = attrs.remove("type")
+        def packed 
+		    if (!type) {
+		      packed = grailsApplication.config.jqueryValidationUi.qTip.get("packed", true)
+		      renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/qTip", file:"jquery.qtip.${packed?'pack.js':'js'}")
+          renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/jquery-validation-ui", file:"grails-validation-methods.js")
+		      renderCSS g.resource(plugin:"jqueryValidationUi", dir:"css/qTip", file:"jquery.qtip.css")
+		    } else if (type.equals("js")) {
+			    packed = grailsApplication.config.jqueryValidationUi.qTip.get("packed", true)
+			    renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/qTip", file:"jquery.qtip.${packed?'pack.js':'js'}")
+		      renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/jquery-validation-ui", file:"grails-validation-methods.js")
+			  } else if (type.equals("css")) {
+			    renderCSS g.resource(plugin:"jqueryValidationUi", dir:"css/qTip", file:"jquery.qtip.css")
+			    }
     }
+	
+	private renderJavaScript(def url) {
+		out << '<script type="text/javascript" src="' + url + '"></script>\n'
+	}
+	
+	private renderCSS(def url) {
+    out << '<link rel="stylesheet" type="text/css" media="screen" href="' + url + '" />\n'
+	}
 	
     def renderValidationScript = { attrs, body ->
         String forClass = attrs.remove("for")
