@@ -30,14 +30,20 @@ jqueryValidation.packed = true
 jqueryValidation.cdn = false  // false or "microsoft"
 jqueryValidation.additionalMethods = true
 
-// Added by the JQuery Validation UI plugin:
-jqueryValidationUi.qTip.packed = false
 
-/*
-* Grails constraints to JQuery Validation rules mapping for client side validation.
-* Constraint not found in the ConstraintsMap will trigger remote AJAX validation.
-*/
+
+// Added by the JQuery Validation UI plugin:
 jqueryValidationUi {
+	qTip {
+		packed = true
+	  jQueryUiStyle = false
+	  classes = "ui-tooltip-red ui-tooltip-shadow ui-tooltip-rounded"
+	}
+	
+	/*
+	  Grails constraints to JQuery Validation rules mapping for client side validation.
+	  Constraint not found in the ConstraintsMap will trigger remote AJAX validation.
+	*/
 	StringConstraintsMap = [
 		blank:"required", // inverse: blank=false,required:true
 		creditCard:"creditcard",

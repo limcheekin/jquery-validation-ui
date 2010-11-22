@@ -80,6 +80,8 @@ class JQueryValidationUiTagLib {
         def alsoProperties = attrs.remove("also")
         def notProperties = attrs.remove("not")
         String form = attrs.remove("form")
+		    def jQueryUiStyle = grailsApplication.config.jqueryValidationUi.qTip.get("jQueryUiStyle", false)
+			  String qTipClasses = grailsApplication.config.jqueryValidationUi.qTip.classes?:""
 			  
         if (!forClass) {
             throwTagError("${TAG_ERROR_PREFIX}Tag missing required attribute [for]")
@@ -129,8 +131,8 @@ errorPlacement: function(error, element)
 		},
 		hide: false,
 		style: {
-			// widget: true,
-			classes: 'ui-tooltip-red',
+			widget: ${jQueryUiStyle},
+			classes: '${qTipClasses}',
 			tip: true
 		}
 	});
