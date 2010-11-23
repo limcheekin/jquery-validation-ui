@@ -82,6 +82,9 @@ class JQueryValidationUiTagLib {
         String form = attrs.remove("form")
 		    def jQueryUiStyle = grailsApplication.config.jqueryValidationUi.qTip.get("jQueryUiStyle", false)
 			  String qTipClasses = grailsApplication.config.jqueryValidationUi.qTip.classes?:""
+			  String errorClass = grailsApplication.config.jqueryValidationUi.errorClass?:"error"
+			  String validClass = grailsApplication.config.jqueryValidationUi.validClass?:"valid"
+			  def onsubmit = grailsApplication.config.jqueryValidationUi.get("onsubmit", true)
 			  
         if (!forClass) {
             throwTagError("${TAG_ERROR_PREFIX}Tag missing required attribute [for]")
@@ -107,13 +110,10 @@ class JQueryValidationUiTagLib {
         out << """\$(function() {
 var myForm = \$('${form?:'form:first'}');
 myForm.validate({
-debug: true,
 onkeyup: false,
-errorClass: 'error',
-validClass: 'valid',
-submitHandler: function(form) {
-   form.submit();
-},				
+errorClass: '${errorClass}',
+validClass: '${validClass}',			
+onsubmit: ${onsubmit},
 success: function(label)
 {
 	\$('#' + label.attr('for')).qtip('destroy');
@@ -121,7 +121,7 @@ success: function(label)
 errorPlacement: function(error, element)
 {
 	if (\$(error).text())
-	\$(element).filter(':not(.valid)').qtip({
+	\$(element).filter(':not(.${validClass})').qtip({
 		overwrite: true,
 		content: error,
 		position: { my: 'left center', at: 'right center' },
