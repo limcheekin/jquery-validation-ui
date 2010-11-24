@@ -67,6 +67,58 @@ class JQueryValidationUiTagLib {
 			    }
     }
 	
+	def renderErrors = { attrs, body ->
+	  def renderErrorsOnTop = grailsApplication.config.jqueryValidationUi.get("renderErrorsOnTop", true)
+		if (renderErrorsOnTop) {
+			String qTipClasses = grailsApplication.config.jqueryValidationUi.qTip.classes?:""
+			String style = attrs.remove("style")?:''
+			String bodyText = body()
+out << """
+<div id="errorContainer${bodyText?'ServerSide':''}" style="z-index: 15001; opacity: 1; ${bodyText?'display: block':'display: none'}; position: relative; ${style}" class="ui-tooltip qtip ui-helper-reset ui-tooltip-focus ui-tooltip-pos-bc${qTipClasses?" $qTipClasses":""}">
+<div style="width: 12px; height: 12px; background-color: transparent; border: 0px none; left: 50%; margin-left: -6px; bottom: -12px;" class="ui-tooltip-tip">
+</div>
+<div class="ui-tooltip-wrapper">
+<div class="ui-tooltip-content errors">
+		${bodyText?:'<ul></ul>'}
+</div>
+</div>
+</div>
+"""
+		}
+}
+	
+	def renderError = { attrs, body ->
+		String labelFor = attrs.remove("for")
+		if (!labelFor) {
+			throwTagError("Tag [jqvalui:renderError] Error: Tag missing required attribute [for]")
+		}
+		def renderErrorsOnTop = grailsApplication.config.jqueryValidationUi.get("renderErrorsOnTop", true)
+		if (!renderErrorsOnTop) {
+			String style = attrs.remove("style")?:''
+			String qTipClasses = grailsApplication.config.jqueryValidationUi.qTip.classes?:""
+	    out << """
+<div style="z-index: 15001; opacity: 1; display: block; ${style}" class="ui-tooltip qtip ui-helper-reset ui-tooltip-focus ui-tooltip-pos-lc${qTipClasses?" $qTipClasses":""}">
+<div style="width: 12px; height: 12px; background-color: transparent; border: 0px none; top: 50%; margin-top: -6px; left: -12px;" class="ui-tooltip-tip">
+<div style="border-right: 12px solid ${getConnectorColor()}; border-top: 6px dashed transparent; border-bottom: 6px dashed transparent;" class="ui-tooltip-tip-inner">
+</div>
+</div>
+<div class="ui-tooltip-wrapper">
+  <div class="ui-tooltip-content ">
+     <label style="display: block;" for="${labelFor}">
+       ${body()}
+     </label>
+  </div>
+</div>
+</div>
+  """
+		  }
+  }
+	
+	private String getConnectorColor() {
+	   def jQueryUiStyle = grailsApplication.config.jqueryValidationUi.qTip.get("jQueryUiStyle", false)
+	   return "rgb(217, 82, 82)"
+	}
+	
 	private renderJavaScript(def url) {
 		out << '<script type="text/javascript" src="' + url + '"></script>\n'
 	}
@@ -85,7 +137,8 @@ class JQueryValidationUiTagLib {
 			  String errorClass = grailsApplication.config.jqueryValidationUi.errorClass?:"error"
 			  String validClass = grailsApplication.config.jqueryValidationUi.validClass?:"valid"
 			  def onsubmit = grailsApplication.config.jqueryValidationUi.get("onsubmit", true)
-			  
+			  def renderErrorsOnTop = grailsApplication.config.jqueryValidationUi.get("renderErrorsOnTop", true)
+			  String renderErrorsOptions
         if (!forClass) {
             throwTagError("${TAG_ERROR_PREFIX}Tag missing required attribute [for]")
         }
@@ -102,21 +155,31 @@ class JQueryValidationUiTagLib {
             if (notProperties) {
 			        notProperties.addAll(alsoProperties) 
             } else { 
-			        new ArrayList(alsoProperties)
+			        notProperties = new ArrayList(alsoProperties)
             }
         }
 		
+		if (renderErrorsOnTop) {
+			renderErrorsOptions = """
+errorContainer: '#errorContainer',
+errorLabelContainer: 'div.errors ul',
+wrapper: 'li',
+"""	
+    } else {
+		  renderErrorsOptions = ''
+		}
         out << '<script type="text/javascript">\n'
         out << """\$(function() {
-var myForm = \$('${form?:'form:first'}');
+var myForm = \$('${form?"#$form":"form:first"}');
 myForm.validate({
 onkeyup: false,
 errorClass: '${errorClass}',
 validClass: '${validClass}',			
 onsubmit: ${onsubmit},
+${renderErrorsOptions}			
 success: function(label)
 {
-	\$('#' + label.attr('for')).qtip('destroy');
+	\$('[id=' + label.attr('for') + ']').qtip('destroy');
 },
 errorPlacement: function(error, element)
 {

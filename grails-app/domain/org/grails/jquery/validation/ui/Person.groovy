@@ -1,8 +1,12 @@
 package org.grails.jquery.validation.ui
 
 class Person {
+	String name
 	Address homeAddress
 	Address workAddress
-	Address notEmbeddedAddress
 	static embedded = ['homeAddress', 'workAddress']
+	
+	static constraints = {
+		name blank:false
+	}
 }

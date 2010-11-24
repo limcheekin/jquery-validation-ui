@@ -10,7 +10,7 @@
         <g:javascript library="jquery" plugin="jquery"/>
         <jqval:resources />
         <jqvalui:resources />
-        <jqvalui:renderValidationScript validatableClass="${domainClass.fullName}" />	                
+        <jqvalui:renderValidationScript for="${domainClass.fullName}" />	                
     </head>
     <body>
         <div class="nav">

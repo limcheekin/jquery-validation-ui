@@ -131,7 +131,7 @@ $(function() {
 </script>
 
 <jqvalui:renderValidationScript for="org.grails.jquery.validation.ui.Person" also="homeAddress, workAddress" not="homeAddress.code, workAddress.number"/>
-<jqvalui:renderValidationScript for="org.grails.jquery.validation.ui.Person" also="notEmbeddedAddress" not="workAddress" form="personForm" />
+<jqvalui:renderValidationScript for="org.grails.jquery.validation.ui.Person" not="workAddress" form="personForm" />
 
 </head>
 <body>
