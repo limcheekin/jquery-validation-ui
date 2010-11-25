@@ -289,7 +289,7 @@ rules: {
                         switch (constraintName) {
                             case "nullable":
                             case "blank":
-                            if (!constrainedProperty.isBlank() || !constrainedProperty.isNullable()) {
+                            if (!constrainedProperty.isBlank() && !constrainedProperty.isNullable()) {
                                 javaScriptConstraints += "\t${javaScriptConstraint}: true,\n"
                             }
                             break
@@ -428,7 +428,7 @@ rules: {
                         switch (constraintName) {
                             case "nullable":
                             case "blank":
-                            if (!constrainedProperty.isBlank() || !constrainedProperty.isNullable()) {
+                            if (!constrainedProperty.isBlank() && !constrainedProperty.isNullable()) {
                                 javaScriptMessages += "\t${javaScriptMessage}: '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}',\n"
                             }
                             break
