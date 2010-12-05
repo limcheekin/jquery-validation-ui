@@ -41,7 +41,7 @@ jqueryValidationUi {
 	
 	qTip {
 		packed = true
-	  jQueryUiStyle = false // false or "smoothness", "darkness"... etc
+	  jQueryUiTheme = false // false or "smoothness", "darkness"... etc
 	  classes = 'ui-tooltip-red ui-tooltip-shadow ui-tooltip-rounded'
 	  // connectorColor = rgb() or #12we34
 	}

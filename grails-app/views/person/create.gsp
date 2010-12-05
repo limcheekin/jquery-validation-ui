@@ -1,5 +1,3 @@
-
-
 <%@ page import="org.grails.jquery.validation.ui.Person" %>
 <html>
     <head>

@@ -7,6 +7,6 @@ class Person {
 	static embedded = ['homeAddress', 'workAddress']
 	
 	static constraints = {
-		name blank:false
+		name blank:false, nullable:false
 	}
 }

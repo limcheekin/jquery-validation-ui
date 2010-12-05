@@ -166,17 +166,7 @@ errorLabelContainer: 'div.errors ul',
 wrapper: 'li',
 """	
     } else {
-		  renderErrorsOptions = ''
-		}
-        out << '<script type="text/javascript">\n'
-        out << """\$(function() {
-var myForm = \$('${form?"#$form":"form:first"}');
-myForm.validate({
-onkeyup: false,
-errorClass: '${errorClass}',
-validClass: '${validClass}',			
-onsubmit: ${onsubmit},
-${renderErrorsOptions}			
+		  renderErrorsOptions = """
 success: function(label)
 {
 	\$('[id=' + label.attr('for') + ']').qtip('destroy');
@@ -200,6 +190,17 @@ errorPlacement: function(error, element)
 		}
 	});
 },
+"""
+		}
+        out << '<script type="text/javascript">\n'
+        out << """\$(function() {
+var myForm = \$('${form?"#$form":"form:first"}');
+myForm.validate({
+onkeyup: false,
+errorClass: '${errorClass}',
+validClass: '${validClass}',			
+onsubmit: ${onsubmit},
+${renderErrorsOptions}			
 rules: {
 """
 
@@ -258,10 +259,12 @@ rules: {
         def constraintsMap
         String javaScriptConstraint
         String namespacedPropertyName
+		    def constrainedPropertyValues
 
-        constrainedPropertiesEntries.each { constrainedPropertiesEntry ->
-            constrainedPropertiesEntry.constrainedProperties.each { propertyName, constrainedProperty  ->
-                namespacedPropertyName = constrainedPropertiesEntry.namespace?"'${constrainedPropertiesEntry.namespace}.${propertyName}'":propertyName
+        constrainedPropertiesEntries.eachWithIndex { constrainedPropertiesEntry, entryIndex ->
+			      constrainedPropertyValues = constrainedPropertiesEntry.constrainedProperties.values()
+            constrainedPropertyValues.eachWithIndex { constrainedProperty, propertyIndex  ->
+                namespacedPropertyName = constrainedPropertiesEntry.namespace?"'${constrainedPropertiesEntry.namespace}.${constrainedProperty.propertyName}'":constrainedProperty.propertyName
                 javaScriptConstraints += "${namespacedPropertyName}: {\n"
                 constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
 
@@ -283,29 +286,31 @@ rules: {
                 }
 		
                 def constraintNames = getConstraintNames(constrainedProperty)
-                constraintNames.each { constraintName ->
+				        log.debug "$namespacedPropertyName: $constraintNames"
+                constraintNames.eachWithIndex { constraintName, i ->
                     javaScriptConstraint = constraintsMap[constraintName]
                     if (javaScriptConstraint) {
                         switch (constraintName) {
                             case "nullable":
                             case "blank":
-                            if (!constrainedProperty.isBlank() && !constrainedProperty.isNullable()) {
-                                javaScriptConstraints += "\t${javaScriptConstraint}: true,\n"
+							              log.debug "constrainedProperty.isBlank() = ${constrainedProperty.isBlank()}, constrainedProperty.isNullable() = ${constrainedProperty.isNullable()}"
+                            if (!constrainedProperty.isBlank() || !constrainedProperty.isNullable()) {
+                                javaScriptConstraints += "\t${javaScriptConstraint}: true"
                             }
                             break
                             case "creditCard":
                             if (constrainedProperty.isCreditCard()) {
-                                javaScriptConstraints += "\t${javaScriptConstraint}: true,\n"
+                                javaScriptConstraints += "\t${javaScriptConstraint}: true"
                             }
                             break
                             case "email":
                             if (constrainedProperty.isEmail()) {
-                                javaScriptConstraints += "\t${javaScriptConstraint}: true,\n"
+                                javaScriptConstraints += "\t${javaScriptConstraint}: true"
                             }
                             break
                             case "url":
                             if (constrainedProperty.isUrl()) {
-                                javaScriptConstraints += "\t${javaScriptConstraint}: true,\n"
+                                javaScriptConstraints += "\t${javaScriptConstraint}: true"
                             }
                             break
                             case "inList":
@@ -315,37 +320,37 @@ rules: {
                             } else {
                                 constrainedProperty.inList.each { javaScriptConstraints += "'${it}'," }
                             }
-                            javaScriptConstraints += "],\n"
+                            javaScriptConstraints += "]"
                             break
                             case "matches":
-                            javaScriptConstraints += "\t${javaScriptConstraint}: '${constrainedProperty.matches}',\n"
+                            javaScriptConstraints += "\t${javaScriptConstraint}: '${constrainedProperty.matches}'"
                             break
                             case "max":
-                            javaScriptConstraints += "\t${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.max.time})" : constrainedProperty.max},\n"
+                            javaScriptConstraints += "\t${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.max.time})" : constrainedProperty.max}"
                             break
                             case "maxSize":
-                            javaScriptConstraints += "\t${javaScriptConstraint}: ${constrainedProperty.maxSize},\n"
+                            javaScriptConstraints += "\t${javaScriptConstraint}: ${constrainedProperty.maxSize}"
                             break
                             case "min":
-                            javaScriptConstraints += "\t${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.min.time})" : constrainedProperty.min},\n"
+                            javaScriptConstraints += "\t${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.min.time})" : constrainedProperty.min}"
                             break
                             case "minSize":
-                            javaScriptConstraints += "\t${javaScriptConstraint}: ${constrainedProperty.minSize},\n"
+                            javaScriptConstraints += "\t${javaScriptConstraint}: ${constrainedProperty.minSize}"
                             break
                             case "notEqual":
-                            javaScriptConstraints += "\t${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.notEqual.time})" : "'${constrainedProperty.notEqual}'"},\n"
+                            javaScriptConstraints += "\t${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.notEqual.time})" : "'${constrainedProperty.notEqual}'"}"
                             break
                             case "range":
                             def range = constrainedProperty.range
                             if (constrainedProperty.propertyType == Date) {
-                                javaScriptConstraints += "\t${javaScriptConstraint}: [new Date(${range.from.time}), new Date(${range.to.time})],\n"
+                                javaScriptConstraints += "\t${javaScriptConstraint}: [new Date(${range.from.time}), new Date(${range.to.time})]"
                             } else {
-                                javaScriptConstraints += "\t${javaScriptConstraint}: [${range.from}, ${range.to}],\n"
+                                javaScriptConstraints += "\t${javaScriptConstraint}: [${range.from}, ${range.to}]"
                             }
                             break
                             case "size":
                             def size = constrainedProperty.size
-                            javaScriptConstraints += "\t${javaScriptConstraint}: [${size.from}, ${size.to}],\n"
+                            javaScriptConstraints += "\t${javaScriptConstraint}: [${size.from}, ${size.to}]"
                             break
                             case "unique":
                             case "validator":
@@ -356,8 +361,9 @@ rules: {
                         log.info "${constraintName} constraint not found in the constraintsMap, use custom constraint and remote validation"
                         javaScriptConstraints += createRemoteJavaScriptConstraints(constraintName, constrainedPropertiesEntry.validatableClass.name, constrainedProperty.propertyName)
                     }
+					javaScriptConstraints += i < constraintNames.size() - 1 ? ",\n" : "\n"
                 }
-                javaScriptConstraints += "},\n"
+				javaScriptConstraints += entryIndex == constrainedPropertiesEntries.size() - 1 && propertyIndex == constrainedPropertyValues.size() - 1 ? "}\n" : "},\n"
             }
         }
         return javaScriptConstraints
@@ -369,13 +375,13 @@ rules: {
 		        "\ttype: 'post',\n" +
 			"\tdata: {\n" +
 			"\t\tvalidatableClass: '${validatableClassName}',\n" +
-			"\t\tproperty: '${propertyName}',\n"
+			"\t\tproperty: '${propertyName}'"
 
         if (!constraintName.equals('unique') && !constraintName.equals('validator')) {
-            remoteJavaScriptConstraints += "\t\tconstraint: '${constraintName}'\n"
+            remoteJavaScriptConstraints += ",\n\t\tconstraint: '${constraintName}'"
         }
 
-        remoteJavaScriptConstraints += "\t}\n\t},\n"
+        remoteJavaScriptConstraints += "\n\t}\n\t}"
 
         return remoteJavaScriptConstraints
     }
@@ -395,10 +401,12 @@ rules: {
         String javaScriptMessage
         def constraintNames
         String namespacedPropertyName
+		    def constrainedPropertyValues
 
-        constrainedPropertiesEntries.each { constrainedPropertiesEntry ->
-            constrainedPropertiesEntry.constrainedProperties.each { propertyName, constrainedProperty  ->
-                namespacedPropertyName = constrainedPropertiesEntry.namespace?"'${constrainedPropertiesEntry.namespace}.${propertyName}'":propertyName
+        constrainedPropertiesEntries.eachWithIndex { constrainedPropertiesEntry, entryIndex ->
+			      constrainedPropertyValues = constrainedPropertiesEntry.constrainedProperties.values()
+            constrainedPropertyValues.eachWithIndex { constrainedProperty, propertyIndex  ->
+                namespacedPropertyName = constrainedPropertiesEntry.namespace?"'${constrainedPropertiesEntry.namespace}.${constrainedProperty.propertyName}'":constrainedProperty.propertyName
                 constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
                 javaScriptMessages += "${namespacedPropertyName}: {\n"
                 constraintNames = getConstraintNames(constrainedProperty)
@@ -420,7 +428,7 @@ rules: {
                     break
                 }
 		
-                constraintNames.each { constraintName ->
+                constraintNames.eachWithIndex { constraintName, i ->
                     javaScriptMessage = constraintsMap[constraintName]
                     if (javaScriptMessage) {
                         args.clear()
@@ -428,8 +436,8 @@ rules: {
                         switch (constraintName) {
                             case "nullable":
                             case "blank":
-                            if (!constrainedProperty.isBlank() && !constrainedProperty.isNullable()) {
-                                javaScriptMessages += "\t${javaScriptMessage}: '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}',\n"
+                            if (!constrainedProperty.isBlank() || !constrainedProperty.isNullable()) {
+                                javaScriptMessages += "\t${javaScriptMessage}: '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'"
                             }
                             break
                             case "creditCard":
@@ -437,7 +445,7 @@ rules: {
                             case "url":
                             if (constrainedProperty.isCreditCard() || constrainedProperty.isEmail() || constrainedProperty.isUrl()) {
                                 args << "' + \$('#${constrainedProperty.propertyName}').val() + '"
-                                javaScriptMessages += "\t${javaScriptMessage}: function() { return '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'; },\n"
+                                javaScriptMessages += "\t${javaScriptMessage}: function() { return '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'; }"
                             }
                             break
                             case "inList":
@@ -449,7 +457,7 @@ rules: {
                             case "notEqual":
                             args << "' + \$('#${constrainedProperty.propertyName}').val() + '"
                             args << constrainedProperty."${constraintName}"
-                            javaScriptMessages += "\t${javaScriptMessage}: function() { return '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'; },\n"
+                            javaScriptMessages += "\t${javaScriptMessage}: function() { return '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'; }"
                             break
 
                             case "range":
@@ -458,13 +466,13 @@ rules: {
                             def range = constrainedProperty."${constraintName}"
                             args << range.from
                             args << range.to
-                            javaScriptMessages += "\t${javaScriptMessage}: function() { return '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'; },\n"
+                            javaScriptMessages += "\t${javaScriptMessage}: function() { return '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'; }"
                             break
                         }
                     }
-				
+					javaScriptMessages += i < constraintNames.size() - 1 ? ",\n" : "\n"
                 }
-                javaScriptMessages += "},\n"
+        javaScriptMessages += entryIndex == constrainedPropertiesEntries.size() - 1 && propertyIndex == constrainedPropertyValues.size() - 1 ? "}\n" : "},\n"
             }
         }
         return javaScriptMessages
