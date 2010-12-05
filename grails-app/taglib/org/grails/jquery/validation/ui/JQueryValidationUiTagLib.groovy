@@ -43,6 +43,22 @@ class JQueryValidationUiTagLib {
         notEqual: "default.not.equal.message",
         nullable: "default.null.message"
     ]
+	  static final CONSTRAINTS_SUPPORTED_BY_MESSAGE = [
+		  "nullable",
+			"blank",
+			"creditCard",
+			"email",
+			"url",
+			"inList",
+			"matches",
+			"max",
+			"maxSize",
+			"min",
+			"minSize",
+			"notEqual",
+			"range",
+			"size"
+		]
 	
     static final String TAG_ERROR_PREFIX = "Tag [jqvalui:renderValidationScript] Error: "
 	
@@ -268,26 +284,31 @@ rules: {
                 namespacedPropertyName = constrainedPropertiesEntry.namespace?"'${constrainedPropertiesEntry.namespace}.${constrainedProperty.propertyName}'":constrainedProperty.propertyName
                 javaScriptConstraints += "${namespacedPropertyName}: {\n"
                 constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
-
-                switch (constrainedProperty.propertyType) {
-                    case Date:
-                    javaScriptConstraints += "\tdate: true,\n"
-                    break
-                    case Long:
-                    case Integer:
-                    case Short:
-                    case BigInteger:
-                    javaScriptConstraints += "\tdigits: true,\n"
-                    break
-                    case Float:
-                    case Double:
-                    case BigDecimal:
-                    javaScriptConstraints += "\tnumber: true,\n"
-                    break
-                }
-		
-                def constraintNames = getConstraintNames(constrainedProperty)
+                def constraintNames = getConstraintNames(constrainedProperty)			
 				        log.debug "$namespacedPropertyName: $constraintNames"
+								javaScriptConstraintCode = null
+						
+								switch (constrainedProperty.propertyType) {
+									case Date:
+									javaScriptConstraintCode = "\tdate: true"
+									break
+									case Long:
+									case Integer:
+									case Short:
+									case BigInteger:
+									javaScriptConstraintCode = "\tdigits: true"
+									break
+									case Float:
+									case Double:
+									case BigDecimal:
+									javaScriptConstraintCode = "\tnumber: true"
+									break
+								}
+								
+								if (javaScriptConstraintCode) {
+									javaScriptConstraints += javaScriptConstraintCode
+									javaScriptConstraints += constraintNames.size() > 0 ? ",\n" : "\n"
+								}
                 constraintNames.eachWithIndex { constraintName, i ->
                     javaScriptConstraint = constraintsMap[constraintName]
 					          javaScriptConstraintCode = null
@@ -321,9 +342,15 @@ rules: {
                             case "inList":
                             javaScriptConstraintCode = "\t${javaScriptConstraint}: ["
                             if (constrainedProperty.propertyType == Date) {
-                                constrainedProperty.inList.each { javaScriptConstraintCode += "new Date(${it.time})," }
+                                constrainedProperty.inList.eachWithIndex { val, listIndex -> 
+									                 javaScriptConstraintCode += "new Date(${val.time})"
+													         javaScriptConstraintCode += listIndex < constrainedProperty.inList.size() - 1 ? ", " : ""
+													            }
                             } else {
-                                constrainedProperty.inList.each { javaScriptConstraintCode += "'${it}'," }
+                                constrainedProperty.inList.eachWithIndex { val, listIndex ->  
+									  javaScriptConstraintCode += "'${val}'" 
+									  javaScriptConstraintCode += listIndex < constrainedProperty.inList.size() - 1 ? ", " : ""
+									}
                             }
                             javaScriptConstraintCode += "]"
                             break
@@ -418,24 +445,29 @@ rules: {
                 namespacedPropertyName = constrainedPropertiesEntry.namespace?"'${constrainedPropertiesEntry.namespace}.${constrainedProperty.propertyName}'":constrainedProperty.propertyName
                 constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
                 javaScriptMessages += "${namespacedPropertyName}: {\n"
-                constraintNames = getConstraintNames(constrainedProperty)
+                constraintNames = getConstraintNames(constrainedProperty).findAll { CONSTRAINTS_SUPPORTED_BY_MESSAGE.contains(it) }
+				        javaScriptMessageCode = null
+							switch (constrainedProperty.propertyType) {
+					                    case Date:
+					                    javaScriptMessageCode = "\tdate: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}'"
+					                    break
+					                    case Long:
+					                    case Integer:
+					                    case Short:
+					                    case BigInteger:
+					                    javaScriptMessageCode = "\tdigits: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}'"
+					                    break
+					                    case Float:
+					                    case Double:
+					                    case BigDecimal:
+					                    javaScriptMessageCode = "\tnumber: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}'"
+					                    break
+					                }
 
-		switch (constrainedProperty.propertyType) {
-                    case Date:
-                    javaScriptMessages += "\tdate: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}',\n"
-                    break
-                    case Long:
-                    case Integer:
-                    case Short:
-                    case BigInteger:
-                    javaScriptMessages += "\tdigits: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}',\n"
-                    break
-                    case Float:
-                    case Double:
-                    case BigDecimal:
-                    javaScriptMessages += "\tnumber: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}',\n"
-                    break
-                }
+								if (javaScriptMessageCode) {
+									javaScriptMessages += javaScriptMessageCode
+									javaScriptMessages += constraintNames.size() > 0 ? ",\n" : "\n"
+								}
 		
                 constraintNames.eachWithIndex { constraintName, i ->
                     javaScriptConstraint = constraintsMap[constraintName]
