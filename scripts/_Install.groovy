@@ -28,8 +28,7 @@
 	if (configFile.exists() && configFile.text.indexOf("jqueryValidationUi") == -1) {
 		configFile.withWriterAppend {
 			it.writeLine '\n// Added by the JQuery Validation UI plugin:'
-			it.writeLine '''
-jqueryValidationUi {
+			it.writeLine '''jqueryValidationUi {
 	errorClass = 'error'
 	validClass = 'valid'
 	onsubmit = true
@@ -97,14 +96,13 @@ jqueryValidationUi {
 	]
 }
 '''
-
-ant.echo '''
+		}
+		ant.echo '''
 ************************************************************
 * Your grails-app/conf/Config.groovy has been updated with *
 * default configurations of JQuery Validation UI;          *
 * please verify that the values are correct.               *
 ************************************************************
-'''
-		}
+		'''
 	}
 }
