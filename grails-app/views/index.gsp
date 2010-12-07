@@ -59,8 +59,8 @@ $(function() {
 					},
 					hide: false,
 					style: {
-						widget: true,
-						// classes: 'ui-tooltip-red', 
+						// widget: true,
+						classes: 'ui-tooltip-red ui-tooltip-shadow ui-tooltip-rounded', 
 						tip: true
 					}
 				});
@@ -68,7 +68,7 @@ $(function() {
 			rules: {
 				email: {
 					required:true,
-          email:true, 
+          email:true
 				},
 			  testInList: {
 				  required:true,
