@@ -1,3 +1,7 @@
 1. Support error messages display at top like Grails default
 2. Configuration support for tooltip style.
 3. Customize scaffolding templates to support the new style of validation message
+
+Outstanding:
+1. i18n messages.properties not display properly for constraints 
+   such as size, validator, etc. in command object

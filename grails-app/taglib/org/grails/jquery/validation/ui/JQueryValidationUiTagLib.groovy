@@ -533,10 +533,17 @@ rules: {
         def defaultMessage = "Error message for ${code} undefined."
         def message = messageSource.getMessage(code, args == null ? null : args.toArray(), null, locale)
 			
+		if (!message) {
+			message = messageSource.getMessage("${code}.error", args == null ? null : args.toArray(), null, locale)
+		}
         if (!message) {
             code = "${GrailsNameUtils.getPropertyName(validatableClass)}.${propertyName}.${constraintName}"
             message = messageSource.getMessage(code, args == null ? null : args.toArray(), null, locale)
         }
+		
+		if (!message) {
+			message = messageSource.getMessage("${code}.error", args == null ? null : args.toArray(), null, locale)
+		}
         if (!message) {
             code = DEFAULT_ERROR_MESSAGE_CODES_MAP[constraintName]
             message = messageSource.getMessage(code, args == null ? null : args.toArray(), defaultMessage, locale)
