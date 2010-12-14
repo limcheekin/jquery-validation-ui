@@ -8,7 +8,7 @@
         <g:javascript library="jquery" plugin="jquery"/>
         <jqval:resources />
         <jqvalui:resources />
-        <jqvalui:renderValidationScript for="org.grails.jquery.validation.ui.Person" also="homeAddress, workAddress" form="personForm"/>	                	                
+        <jqvalui:renderValidationScript for="org.grails.jquery.validation.ui.Person" also="homeAddress, workAddress" />	                	                
     </head>
     <body>
         <div class="nav">

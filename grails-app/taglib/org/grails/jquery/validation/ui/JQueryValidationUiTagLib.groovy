@@ -84,7 +84,7 @@ class JQueryValidationUiTagLib {
     }
 	
 	def renderErrors = { attrs, body ->
-	  def renderErrorsOnTop = grailsApplication.config.jqueryValidationUi.get("renderErrorsOnTop", true)
+	  def renderErrorsOnTop = attrs.render ? Boolean.valueOf(attrs.render) : grailsApplication.config.jqueryValidationUi.get("renderErrorsOnTop", true)
 		if (renderErrorsOnTop) {
 			String qTipClasses = grailsApplication.config.jqueryValidationUi.qTip.classes?:""
 			String style = attrs.remove("style")?:''
@@ -148,12 +148,13 @@ out << """
         def alsoProperties = attrs.remove("also")
         def notProperties = attrs.remove("not")
         String form = attrs.remove("form")
-		    def jQueryUiStyle = grailsApplication.config.jqueryValidationUi.qTip.get("jQueryUiStyle", false)
-			  String qTipClasses = grailsApplication.config.jqueryValidationUi.qTip.classes?:""
-			  String errorClass = grailsApplication.config.jqueryValidationUi.errorClass?:"error"
-			  String validClass = grailsApplication.config.jqueryValidationUi.validClass?:"valid"
-			  def onsubmit = grailsApplication.config.jqueryValidationUi.get("onsubmit", true)
-			  def renderErrorsOnTop = grailsApplication.config.jqueryValidationUi.get("renderErrorsOnTop", true)
+        def config = grailsApplication.config.jqueryValidationUi
+		    def jQueryUiStyle = config.qTip.get("jQueryUiStyle", false)
+			  String qTipClasses = config.qTip.classes?:""
+			  String errorClass = attrs.errorClass?:config.errorClass?:"error"
+			  String validClass = attrs.validClass?:config.validClass?:"valid"
+			  def onsubmit = attrs.onsubmit ? Boolean.valueOf(attrs.onsubmit) : config.get("onsubmit", true)
+			  def renderErrorsOnTop = attrs.renderErrorsOnTop ? Boolean.valueOf(attrs.renderErrorsOnTop) : config.get("renderErrorsOnTop", true)
 			  String renderErrorsOptions
         if (!forClass) {
             throwTagError("${TAG_ERROR_PREFIX}Tag missing required attribute [for]")

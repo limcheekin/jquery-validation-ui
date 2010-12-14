@@ -4,6 +4,7 @@ import grails.test.*
 import grails.util.GrailsNameUtils
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.util.ReflectionUtils
+import org.springframework.validation.DefaultMessageCodesResolver
 
 class ConstraintsRetrieveTests extends GrailsUnitTestCase {
 	def grailsApplication
@@ -83,6 +84,22 @@ class ConstraintsRetrieveTests extends GrailsUnitTestCase {
 		def commandClass = grailsApplication.classLoader.loadClass("org.grails.jquery.validation.ui.LoginCommand")
 		assertNotNull commandClass
 		assertNotNull commandClass.constraints
+	}
+	
+	void testRetrieveMessageCodesFromPersonWorkAddressNumber() {
+		def domainClass = grailsApplication.classLoader.loadClass("org.grails.jquery.validation.ui.Person")
+		def constrainedProperties = getConstrainedProperties(domainClass)
+		
+		constrainedProperties.each { name, constrainedProperty ->
+			if (!constrainedProperty.appliedConstraints) {
+				println "Property '$name' has no constraints"
+			}
+			else {
+				constrainedProperty.appliedConstraints.each { c ->
+					println "Property '$name' has constraint $c"
+				}
+			}
+		}		
 	}
 	
 	// http://www.ibm.com/developerworks/java/library/j-grails10148/index.html

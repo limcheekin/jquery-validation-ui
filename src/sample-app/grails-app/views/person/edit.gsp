@@ -7,6 +7,10 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}" />
         <title><g:message code="default.edit.label" args="[entityName]" /></title>
+        <g:javascript library="jquery" plugin="jquery"/>
+        <jqval:resources />
+        <jqvalui:resources />
+        <jqvalui:renderValidationScript for="org.grails.jquery.validation.ui.Person" also="homeAddress, workAddress" />	 
     </head>
     <body>
         <div class="nav">
@@ -27,40 +31,7 @@
             <g:form method="post" >
                 <g:hiddenField name="id" value="${personInstance?.id}" />
                 <g:hiddenField name="version" value="${personInstance?.version}" />
-                <div class="dialog">
-                    <table>
-                        <tbody>
-                        
-                            <tr class="prop">
-                                <td valign="top" class="name">
-                                  <label for="homeAddress"><g:message code="person.homeAddress.label" default="Home Address" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: personInstance, field: 'homeAddress', 'errors')}">
-                                    
-                                </td>
-                            </tr>
-                        
-                            <tr class="prop">
-                                <td valign="top" class="name">
-                                  <label for="name"><g:message code="person.name.label" default="Name" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: personInstance, field: 'name', 'errors')}">
-                                    <g:textField name="name" value="${personInstance?.name}" />
-                                </td>
-                            </tr>
-                        
-                            <tr class="prop">
-                                <td valign="top" class="name">
-                                  <label for="workAddress"><g:message code="person.workAddress.label" default="Work Address" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: personInstance, field: 'workAddress', 'errors')}">
-                                    
-                                </td>
-                            </tr>
-                        
-                        </tbody>
-                    </table>
-                </div>
+                <g:render template="createAndEdit" />
                 <div class="buttons">
                     <span class="button"><g:actionSubmit class="save" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" /></span>
                     <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
