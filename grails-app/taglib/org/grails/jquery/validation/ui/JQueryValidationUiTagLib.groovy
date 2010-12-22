@@ -89,13 +89,19 @@ class JQueryValidationUiTagLib {
 			String qTipClasses = grailsApplication.config.jqueryValidationUi.qTip.classes?:""
 			String style = attrs.remove("style")?:''
 			String bodyText = body()
-out << """
+      def writer = getOut()
+      writer << """
 <div id="errorContainer${bodyText?'ServerSide':''}" style="z-index: 15001; opacity: 1; ${bodyText?'display: block':'display: none'}; position: relative; ${style}" class="ui-tooltip qtip ui-helper-reset ui-tooltip-focus ui-tooltip-pos-bc${qTipClasses?" $qTipClasses":""}">
 <div style="width: 12px; height: 12px; background-color: transparent; border: 0px none; left: 50%; margin-left: -6px; bottom: -12px;" class="ui-tooltip-tip">
 </div>
 <div class="ui-tooltip-wrapper">
-<div class="ui-tooltip-content errors">
-		${bodyText?:'<ul></ul>'}
+<div class="ui-tooltip-content errors">"""
+	  if (bodyText) {
+		  writer << bodyText
+	  } else {
+	    writer << '<ul></ul>'
+	  }
+		 writer << """
 </div>
 </div>
 </div>
@@ -112,21 +118,22 @@ out << """
 		if (!renderErrorsOnTop) {
 			String style = attrs.remove("style")?:''
 			String qTipClasses = grailsApplication.config.jqueryValidationUi.qTip.classes?:""
-	    out << """
+			def writer = getOut()
+			writer << """
 <div style="z-index: 15001; opacity: 1; display: block; ${style}" class="ui-tooltip qtip ui-helper-reset ui-tooltip-focus ui-tooltip-pos-lc${qTipClasses?" $qTipClasses":""}">
 <div style="width: 12px; height: 12px; background-color: transparent; border: 0px none; top: 50%; margin-top: -6px; left: -12px;" class="ui-tooltip-tip">
 <div style="border-right: 12px solid ${getConnectorColor()}; border-top: 6px dashed transparent; border-bottom: 6px dashed transparent;" class="ui-tooltip-tip-inner">
 </div>
 </div>
 <div class="ui-tooltip-wrapper">
-  <div class="ui-tooltip-content ">
-     <label style="display: block;" for="${labelFor}">
-       ${body()}
-     </label>
+  <div class="ui-tooltip-content">
+     <label style="display: block;" for="${labelFor}">"""
+     writer << body()
+     writer << """</label>
   </div>
 </div>
 </div>
-  """
+"""
 		  }
   }
 	
