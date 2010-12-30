@@ -101,6 +101,11 @@ jqueryValidationUi {
 		nullable:'required',
 		validator:'validator'
 	]
+	
+	CustomConstraintsMap = [
+		phone:'true',
+		phoneUS:'true'
+	]
 }
 
 

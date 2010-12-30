@@ -43,23 +43,16 @@ class JQueryValidationUiTagLib {
         notEqual: "default.not.equal.message",
         nullable: "default.null.message"
     ]
-	  static final CONSTRAINTS_SUPPORTED_BY_MESSAGE = [
-		  "nullable",
-			"blank",
-			"creditCard",
-			"email",
-			"url",
-			"inList",
-			"matches",
-			"max",
-			"maxSize",
-			"min",
-			"minSize",
-			"notEqual",
-			"range",
-			"size"
-		]
+    static final CONSTRAINTS_NOT_SUPPORTED_BY_MESSAGE = [
+		  "unique",
+		  "validator"
+    ]
 	
+    static final ERROR_CODE_SUFFIXES = [
+		  "error",
+		  "invalid"
+    ]
+	  
     static final String TAG_ERROR_PREFIX = "Tag [jqvalui:renderValidationScript] Error: "
 	
     static final String TYPE_MISMATCH_MESSAGE_PREFIX = "typeMismatch."
@@ -67,59 +60,59 @@ class JQueryValidationUiTagLib {
     def jqueryValidationService
 	
     def resources = { attrs, body ->
-		    String type = attrs.remove("type")
+        String type = attrs.remove("type")
         def packed 
-		    if (!type) {
-		      packed = grailsApplication.config.jqueryValidationUi.qTip.get("packed", true)
-		      renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/qTip", file:"jquery.qtip.${packed?'pack.js':'js'}")
-          renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/jquery-validation-ui", file:"grails-validation-methods.js")
-		      renderCSS g.resource(plugin:"jqueryValidationUi", dir:"css/qTip", file:"jquery.qtip.css")
-		    } else if (type.equals("js")) {
-			    packed = grailsApplication.config.jqueryValidationUi.qTip.get("packed", true)
-			    renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/qTip", file:"jquery.qtip.${packed?'pack.js':'js'}")
-		      renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/jquery-validation-ui", file:"grails-validation-methods.js")
-			  } else if (type.equals("css")) {
-			    renderCSS g.resource(plugin:"jqueryValidationUi", dir:"css/qTip", file:"jquery.qtip.css")
-			    }
+        if (!type) {
+            packed = grailsApplication.config.jqueryValidationUi.qTip.get("packed", true)
+            renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/qTip", file:"jquery.qtip.${packed?'pack.js':'js'}")
+            renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/jquery-validation-ui", file:"grails-validation-methods.js")
+            renderCSS g.resource(plugin:"jqueryValidationUi", dir:"css/qTip", file:"jquery.qtip.css")
+        } else if (type.equals("js")) {
+            packed = grailsApplication.config.jqueryValidationUi.qTip.get("packed", true)
+            renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/qTip", file:"jquery.qtip.${packed?'pack.js':'js'}")
+            renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/jquery-validation-ui", file:"grails-validation-methods.js")
+        } else if (type.equals("css")) {
+            renderCSS g.resource(plugin:"jqueryValidationUi", dir:"css/qTip", file:"jquery.qtip.css")
+        }
     }
 	
-	def renderErrors = { attrs, body ->
-	  def renderErrorsOnTop = attrs.render ? Boolean.valueOf(attrs.render) : grailsApplication.config.jqueryValidationUi.get("renderErrorsOnTop", true)
-		if (renderErrorsOnTop) {
-			String qTipClasses = grailsApplication.config.jqueryValidationUi.qTip.classes?:""
-			String style = attrs.remove("style")?:''
-			String bodyText = body()
-      def writer = getOut()
-      writer << """
+    def renderErrors = { attrs, body ->
+        def renderErrorsOnTop = attrs.render ? Boolean.valueOf(attrs.render) : grailsApplication.config.jqueryValidationUi.get("renderErrorsOnTop", true)
+        if (renderErrorsOnTop) {
+            String qTipClasses = grailsApplication.config.jqueryValidationUi.qTip.classes?:""
+            String style = attrs.remove("style")?:''
+            String bodyText = body()
+            def writer = getOut()
+            writer << """
 <div id="errorContainer${bodyText?'ServerSide':''}" style="z-index: 15001; opacity: 1; ${bodyText?'display: block':'display: none'}; position: relative; ${style}" class="ui-tooltip qtip ui-helper-reset ui-tooltip-focus ui-tooltip-pos-bc${qTipClasses?" $qTipClasses":""}">
 <div style="width: 12px; height: 12px; background-color: transparent; border: 0px none; left: 50%; margin-left: -6px; bottom: -12px;" class="ui-tooltip-tip">
 </div>
 <div class="ui-tooltip-wrapper">
 <div class="ui-tooltip-content errors">"""
-	  if (bodyText) {
-		  writer << bodyText
-	  } else {
-	    writer << '<ul></ul>'
-	  }
-		 writer << """
+            if (bodyText) {
+                writer << bodyText
+            } else {
+                writer << '<ul></ul>'
+            }
+            writer << """
 </div>
 </div>
 </div>
 """
-		}
-}
+        }
+    }
 	
-	def renderError = { attrs, body ->
-		String labelFor = attrs.remove("for")
-		if (!labelFor) {
-			throwTagError("Tag [jqvalui:renderError] Error: Tag missing required attribute [for]")
-		}
-		def renderErrorsOnTop = grailsApplication.config.jqueryValidationUi.get("renderErrorsOnTop", true)
-		if (!renderErrorsOnTop) {
-			String style = attrs.remove("style")?:''
-			String qTipClasses = grailsApplication.config.jqueryValidationUi.qTip.classes?:""
-			def writer = getOut()
-			writer << """
+    def renderError = { attrs, body ->
+        String labelFor = attrs.remove("for")
+        if (!labelFor) {
+            throwTagError("Tag [jqvalui:renderError] Error: Tag missing required attribute [for]")
+        }
+        def renderErrorsOnTop = grailsApplication.config.jqueryValidationUi.get("renderErrorsOnTop", true)
+        if (!renderErrorsOnTop) {
+            String style = attrs.remove("style")?:''
+            String qTipClasses = grailsApplication.config.jqueryValidationUi.qTip.classes?:""
+            def writer = getOut()
+            writer << """
 <div style="z-index: 15001; opacity: 1; display: block; ${style}" class="ui-tooltip qtip ui-helper-reset ui-tooltip-focus ui-tooltip-pos-lc${qTipClasses?" $qTipClasses":""}">
 <div style="width: 12px; height: 12px; background-color: transparent; border: 0px none; top: 50%; margin-top: -6px; left: -12px;" class="ui-tooltip-tip">
 <div style="border-right: 12px solid ${getConnectorColor()}; border-top: 6px dashed transparent; border-bottom: 6px dashed transparent;" class="ui-tooltip-tip-inner">
@@ -128,27 +121,27 @@ class JQueryValidationUiTagLib {
 <div class="ui-tooltip-wrapper">
   <div class="ui-tooltip-content">
      <label style="display: block;" for="${labelFor}">"""
-     writer << body()
-     writer << """</label>
+            writer << body()
+            writer << """</label>
   </div>
 </div>
 </div>
 """
-		  }
-  }
+        }
+    }
 	
-	private String getConnectorColor() {
-	   def jQueryUiStyle = grailsApplication.config.jqueryValidationUi.qTip.get("jQueryUiStyle", false)
-	   return "rgb(217, 82, 82)"
-	}
+    private String getConnectorColor() {
+        def jQueryUiStyle = grailsApplication.config.jqueryValidationUi.qTip.get("jQueryUiStyle", false)
+        return "rgb(217, 82, 82)"
+    }
 	
-	private renderJavaScript(def url) {
-		out << '<script type="text/javascript" src="' + url + '"></script>\n'
-	}
+    private renderJavaScript(def url) {
+        out << '<script type="text/javascript" src="' + url + '"></script>\n'
+    }
 	
-	private renderCSS(def url) {
-    out << '<link rel="stylesheet" type="text/css" media="screen" href="' + url + '" />\n'
-	}
+    private renderCSS(def url) {
+        out << '<link rel="stylesheet" type="text/css" media="screen" href="' + url + '" />\n'
+    }
 	
     def renderValidationScript = { attrs, body ->
         String forClass = attrs.remove("for")
@@ -156,13 +149,13 @@ class JQueryValidationUiTagLib {
         def notProperties = attrs.remove("not")
         String form = attrs.remove("form")
         def config = grailsApplication.config.jqueryValidationUi
-		    def jQueryUiStyle = config.qTip.get("jQueryUiStyle", false)
-			  String qTipClasses = config.qTip.classes?:""
-			  String errorClass = attrs.errorClass?:config.errorClass?:"error"
-			  String validClass = attrs.validClass?:config.validClass?:"valid"
-			  def onsubmit = attrs.onsubmit ? Boolean.valueOf(attrs.onsubmit) : config.get("onsubmit", true)
-			  def renderErrorsOnTop = attrs.renderErrorsOnTop ? Boolean.valueOf(attrs.renderErrorsOnTop) : config.get("renderErrorsOnTop", true)
-			  String renderErrorsOptions
+        def jQueryUiStyle = config.qTip.get("jQueryUiStyle", false)
+        String qTipClasses = config.qTip.classes?:""
+        String errorClass = attrs.errorClass?:config.errorClass?:"error"
+        String validClass = attrs.validClass?:config.validClass?:"valid"
+        def onsubmit = attrs.onsubmit ? Boolean.valueOf(attrs.onsubmit) : config.get("onsubmit", true)
+        def renderErrorsOnTop = attrs.renderErrorsOnTop ? Boolean.valueOf(attrs.renderErrorsOnTop) : config.get("renderErrorsOnTop", true)
+        String renderErrorsOptions
         if (!forClass) {
             throwTagError("${TAG_ERROR_PREFIX}Tag missing required attribute [for]")
         }
@@ -172,25 +165,25 @@ class JQueryValidationUiTagLib {
         }
 		
         if (notProperties) {
-            notProperties = notProperties.split(',').collect { it.stripIndent() }
+            notProperties = notProperties.split(',').collect { it.trim() }
         }
         if (alsoProperties) {
-			      alsoProperties = alsoProperties.split(',').collect { it.stripIndent() }
+            alsoProperties = alsoProperties.split(',').collect { it.trim() }
             if (notProperties) {
-			        notProperties.addAll(alsoProperties) 
+                notProperties.addAll(alsoProperties)
             } else { 
-			        notProperties = new ArrayList(alsoProperties)
+                notProperties = new ArrayList(alsoProperties)
             }
         }
 		
-		if (renderErrorsOnTop) {
-			renderErrorsOptions = """
+        if (renderErrorsOnTop) {
+            renderErrorsOptions = """
 errorContainer: '#errorContainer',
 errorLabelContainer: 'div.errors ul',
 wrapper: 'li',
 """	
-    } else {
-		  renderErrorsOptions = """
+        } else {
+            renderErrorsOptions = """
 success: function(label)
 {
 	\$('[id=' + label.attr('for') + ']').qtip('destroy');
@@ -215,7 +208,7 @@ errorPlacement: function(error, element)
 	});
 },
 """
-		}
+        }
         out << '<script type="text/javascript">\n'
         out << """\$(function() {
 var myForm = \$('${form?"#$form":"form:first"}');
@@ -283,50 +276,50 @@ rules: {
         def constraintsMap
         String javaScriptConstraint
         String namespacedPropertyName
-		    def constrainedPropertyValues
-			  String javaScriptConstraintCode
+        def constrainedPropertyValues
+        String javaScriptConstraintCode
 
         constrainedPropertiesEntries.eachWithIndex { constrainedPropertiesEntry, entryIndex ->
-			      constrainedPropertyValues = constrainedPropertiesEntry.constrainedProperties.values()
+            constrainedPropertyValues = constrainedPropertiesEntry.constrainedProperties.values()
             constrainedPropertyValues.eachWithIndex { constrainedProperty, propertyIndex  ->
                 namespacedPropertyName = constrainedPropertiesEntry.namespace?"'${constrainedPropertiesEntry.namespace}.${constrainedProperty.propertyName}'":constrainedProperty.propertyName
                 javaScriptConstraints += "${namespacedPropertyName}: {\n"
                 constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
                 def constraintNames = getConstraintNames(constrainedProperty)			
-				        log.debug "$namespacedPropertyName: $constraintNames"
-								javaScriptConstraintCode = null
+                log.debug "$namespacedPropertyName: $constraintNames"
+                javaScriptConstraintCode = null
 						
-								switch (constrainedProperty.propertyType) {
-									case Date:
-									javaScriptConstraintCode = "\tdate: true"
-									break
-									case Long:
-									case Integer:
-									case Short:
-									case BigInteger:
-									javaScriptConstraintCode = "\tdigits: true"
-									break
-									case Float:
-									case Double:
-									case BigDecimal:
-									javaScriptConstraintCode = "\tnumber: true"
-									break
-								}
+                switch (constrainedProperty.propertyType) {
+                    case Date:
+                    javaScriptConstraintCode = "\tdate: true"
+                    break
+                    case Long:
+                    case Integer:
+                    case Short:
+                    case BigInteger:
+                    javaScriptConstraintCode = "\tdigits: true"
+                    break
+                    case Float:
+                    case Double:
+                    case BigDecimal:
+                    javaScriptConstraintCode = "\tnumber: true"
+                    break
+                }
 								
-								if (javaScriptConstraintCode) {
-									javaScriptConstraints += javaScriptConstraintCode
-									javaScriptConstraints += constraintNames.size() > 0 ? ",\n" : "\n"
-								}
+                if (javaScriptConstraintCode) {
+                    javaScriptConstraints += javaScriptConstraintCode
+                    javaScriptConstraints += constraintNames.size() > 0 ? ",\n" : "\n"
+                }
                 constraintNames.eachWithIndex { constraintName, i ->
                     javaScriptConstraint = constraintsMap[constraintName]
-					          javaScriptConstraintCode = null
+                    javaScriptConstraintCode = null
                     if (javaScriptConstraint) {
                         switch (constraintName) {
                             case "nullable":
-														if (!constrainedProperty.isNullable()) {
-															javaScriptConstraintCode = "\t${javaScriptConstraint}: true"
-														}
-														break
+                            if (!constrainedProperty.isNullable()) {
+                                javaScriptConstraintCode = "\t${javaScriptConstraint}: true"
+                            }
+                            break
                             case "blank":
                             if (!constrainedProperty.isBlank()) {
                                 javaScriptConstraintCode = "\t${javaScriptConstraint}: true"
@@ -351,14 +344,14 @@ rules: {
                             javaScriptConstraintCode = "\t${javaScriptConstraint}: ["
                             if (constrainedProperty.propertyType == Date) {
                                 constrainedProperty.inList.eachWithIndex { val, listIndex -> 
-									                 javaScriptConstraintCode += "new Date(${val.time})"
-													         javaScriptConstraintCode += listIndex < constrainedProperty.inList.size() - 1 ? ", " : ""
-													            }
+                                    javaScriptConstraintCode += "new Date(${val.time})"
+                                    javaScriptConstraintCode += listIndex < constrainedProperty.inList.size() - 1 ? ", " : ""
+                                }
                             } else {
                                 constrainedProperty.inList.eachWithIndex { val, listIndex ->  
-									  javaScriptConstraintCode += "'${val}'" 
-									  javaScriptConstraintCode += listIndex < constrainedProperty.inList.size() - 1 ? ", " : ""
-									}
+                                    javaScriptConstraintCode += "'${val}'"
+                                    javaScriptConstraintCode += listIndex < constrainedProperty.inList.size() - 1 ? ", " : ""
+                                }
                             }
                             javaScriptConstraintCode += "]"
                             break
@@ -398,15 +391,20 @@ rules: {
                             break
                         }
                     } else {
-                        log.info "${constraintName} constraint not found in the constraintsMap, use custom constraint and remote validation"
-                        javaScriptConstraintCode = createRemoteJavaScriptConstraints(constraintName, constrainedPropertiesEntry.validatableClass.name, constrainedProperty.propertyName)
+                        def customConstraintsMap = grailsApplication.config.jqueryValidationUi.CustomConstraintsMap
+                        if (customConstraintsMap && customConstraintsMap[constraintName]) {
+                            javaScriptConstraintCode = "\t$constraintName: ${customConstraintsMap[constraintName]}"
+                        } else {
+                            log.info "${constraintName} constraint not found even in the CustomConstraintsMap, use custom constraint and remote validation"
+                            javaScriptConstraintCode = createRemoteJavaScriptConstraints(constraintName, constrainedPropertiesEntry.validatableClass.name, constrainedProperty.propertyName)
+                        }
                     }
-					if (javaScriptConstraintCode) {
-						javaScriptConstraints += javaScriptConstraintCode
-						javaScriptConstraints += i < constraintNames.size() - 1 ? ",\n" : "\n"
-					}
+                    if (javaScriptConstraintCode) {
+                        javaScriptConstraints += javaScriptConstraintCode
+                        javaScriptConstraints += i < constraintNames.size() - 1 ? ",\n" : "\n"
+                    }
                 }
-				javaScriptConstraints += entryIndex == constrainedPropertiesEntries.size() - 1 && propertyIndex == constrainedPropertyValues.size() - 1 ? "}\n" : "},\n"
+                javaScriptConstraints += entryIndex == constrainedPropertiesEntries.size() - 1 && propertyIndex == constrainedPropertyValues.size() - 1 ? "}\n" : "},\n"
             }
         }
         return javaScriptConstraints
@@ -444,50 +442,50 @@ rules: {
         String javaScriptConstraint
         def constraintNames
         String namespacedPropertyName
-		    def constrainedPropertyValues
-			  String javaScriptMessageCode
+        def constrainedPropertyValues
+        String javaScriptMessageCode
 
         constrainedPropertiesEntries.eachWithIndex { constrainedPropertiesEntry, entryIndex ->
-			      constrainedPropertyValues = constrainedPropertiesEntry.constrainedProperties.values()
+            constrainedPropertyValues = constrainedPropertiesEntry.constrainedProperties.values()
             constrainedPropertyValues.eachWithIndex { constrainedProperty, propertyIndex  ->
                 namespacedPropertyName = constrainedPropertiesEntry.namespace?"'${constrainedPropertiesEntry.namespace}.${constrainedProperty.propertyName}'":constrainedProperty.propertyName
                 constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
                 javaScriptMessages += "${namespacedPropertyName}: {\n"
-                constraintNames = getConstraintNames(constrainedProperty).findAll { CONSTRAINTS_SUPPORTED_BY_MESSAGE.contains(it) }
-				        javaScriptMessageCode = null
-							switch (constrainedProperty.propertyType) {
-					                    case Date:
-					                    javaScriptMessageCode = "\tdate: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}'"
-					                    break
-					                    case Long:
-					                    case Integer:
-					                    case Short:
-					                    case BigInteger:
-					                    javaScriptMessageCode = "\tdigits: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}'"
-					                    break
-					                    case Float:
-					                    case Double:
-					                    case BigDecimal:
-					                    javaScriptMessageCode = "\tnumber: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}'"
-					                    break
-					                }
+                constraintNames = getConstraintNames(constrainedProperty).findAll { !CONSTRAINTS_NOT_SUPPORTED_BY_MESSAGE.contains(it) }
+                javaScriptMessageCode = null
+                switch (constrainedProperty.propertyType) {
+                    case Date:
+                    javaScriptMessageCode = "\tdate: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}'"
+                    break
+                    case Long:
+                    case Integer:
+                    case Short:
+                    case BigInteger:
+                    javaScriptMessageCode = "\tdigits: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}'"
+                    break
+                    case Float:
+                    case Double:
+                    case BigDecimal:
+                    javaScriptMessageCode = "\tnumber: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}'"
+                    break
+                }
 
-								if (javaScriptMessageCode) {
-									javaScriptMessages += javaScriptMessageCode
-									javaScriptMessages += constraintNames.size() > 0 ? ",\n" : "\n"
-								}
+                if (javaScriptMessageCode) {
+                    javaScriptMessages += javaScriptMessageCode
+                    javaScriptMessages += constraintNames.size() > 0 ? ",\n" : "\n"
+                }
 		
                 constraintNames.eachWithIndex { constraintName, i ->
                     javaScriptConstraint = constraintsMap[constraintName]
-					          javaScriptMessageCode = null
+                    javaScriptMessageCode = null
+                    args.clear()
+                    args = [constrainedProperty.propertyName, constrainedPropertiesEntry.validatableClass]
                     if (javaScriptConstraint) {
-                        args.clear()
-                        args = [constrainedProperty.propertyName, constrainedPropertiesEntry.validatableClass]
                         switch (constraintName) {
                             case "nullable":
-														if (!constrainedProperty.isNullable()) {
-															javaScriptMessageCode = "\t${javaScriptConstraint}: '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'"
-														}
+                            if (!constrainedProperty.isNullable()) {
+                                javaScriptMessageCode = "\t${javaScriptConstraint}: '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'"
+                            }
                             case "blank":
                             if (!constrainedProperty.isBlank()) {
                                 javaScriptMessageCode = "\t${javaScriptConstraint}: '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'"
@@ -522,13 +520,19 @@ rules: {
                             javaScriptMessageCode = "\t${javaScriptConstraint}: function() { return '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'; }"
                             break
                         }
+                    } else {
+                        def customConstraintsMap = grailsApplication.config.jqueryValidationUi.CustomConstraintsMap
+                        if (customConstraintsMap && customConstraintsMap[constraintName]) {
+                            args << "' + \$('#${constrainedProperty.propertyName}').val() + '"
+                            javaScriptMessageCode = "\t${constraintName}: function() { return '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'; }"
+                        } // else remote validation, using remote message.
                     }
-					if (javaScriptMessageCode) {
-						javaScriptMessages += javaScriptMessageCode
-						javaScriptMessages += i < constraintNames.size() - 1 ? ",\n" : "\n"
-					}
+                    if (javaScriptMessageCode) {
+                        javaScriptMessages += javaScriptMessageCode
+                        javaScriptMessages += i < constraintNames.size() - 1 ? ",\n" : "\n"
+                    }
                 }
-        javaScriptMessages += entryIndex == constrainedPropertiesEntries.size() - 1 && propertyIndex == constrainedPropertyValues.size() - 1 ? "}\n" : "},\n"
+                javaScriptMessages += entryIndex == constrainedPropertiesEntries.size() - 1 && propertyIndex == constrainedPropertyValues.size() - 1 ? "}\n" : "},\n"
             }
         }
         return javaScriptMessages
@@ -540,18 +544,18 @@ rules: {
         def code = "${validatableClass.name}.${propertyName}.${constraintName}"
         def defaultMessage = "Error message for ${code} undefined."
         def message = messageSource.getMessage(code, args == null ? null : args.toArray(), null, locale)
-			
-		if (!message) {
-			message = messageSource.getMessage("${code}.error", args == null ? null : args.toArray(), null, locale)
-		}
+
+        ERROR_CODE_SUFFIXES.each { errorSuffix ->
+            message = message?:messageSource.getMessage("${code}.${errorSuffix}", args == null ? null : args.toArray(), null, locale)
+        }
         if (!message) {
             code = "${GrailsNameUtils.getPropertyName(validatableClass)}.${propertyName}.${constraintName}"
             message = messageSource.getMessage(code, args == null ? null : args.toArray(), null, locale)
         }
 		
-		if (!message) {
-			message = messageSource.getMessage("${code}.error", args == null ? null : args.toArray(), null, locale)
-		}
+        ERROR_CODE_SUFFIXES.each { errorSuffix ->
+            message = message?:messageSource.getMessage("${code}.${errorSuffix}", args == null ? null : args.toArray(), null, locale)
+        }
         if (!message) {
             code = DEFAULT_ERROR_MESSAGE_CODES_MAP[constraintName]
             message = messageSource.getMessage(code, args == null ? null : args.toArray(), defaultMessage, locale)

@@ -94,6 +94,11 @@
 		nullable:'required',
 		validator:'validator'
 	]
+	
+	CustomConstraintsMap = [
+		phone:'true', // International phone number validation
+		phoneUS:'true'
+	]	
 }
 '''
 		}

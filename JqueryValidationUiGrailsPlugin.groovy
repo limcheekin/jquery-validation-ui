@@ -23,7 +23,7 @@ class JqueryValidationUiGrailsPlugin {
     // the plugin version
     def version = "1.1"
     // the version or versions of Grails the plugin is designed for
-    def grailsVersion = "1.3.5 > *"
+    def grailsVersion = "1.2.2 > *"
     // the other plugins this plugin depends on
     def dependsOn = [jqueryValidation: '1.7 > *', constraints: '0.5.1 > *']
     // resources that are excluded from plugin packaging

@@ -95,7 +95,7 @@ jQuery.validator.addMethod("custom", function(value, element, params) {
 }, '');
 
 // http://www.24hourapps.com/2009/02/jquery-international-phone-number.html
-jQuery.validator.addMethod('phone', function(value) { 
-	return return this.optional(element) || value.match(/^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/); 
-}, 'Please enter a valid phone number (Intl format accepted)');
+jQuery.validator.addMethod("phone", function(value, element, params) { 
+	return this.optional(element) || value.match(/^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/); 
+}, 'Invalid international phone number.');
 	
