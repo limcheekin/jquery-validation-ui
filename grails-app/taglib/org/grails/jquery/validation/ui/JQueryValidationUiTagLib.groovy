@@ -41,11 +41,9 @@ class JQueryValidationUiTagLib {
         inList: "default.not.inlist.message",
         blank: "default.blank.message",
         notEqual: "default.not.equal.message",
-        nullable: "default.null.message"
-    ]
-    static final CONSTRAINTS_NOT_SUPPORTED_BY_MESSAGE = [
-		  "unique",
-		  "validator"
+        nullable: "default.null.message",
+		    validator: "default.invalid.validator.message",
+		    unique: "default.not.unique.message"
     ]
 	
     static final ERROR_CODE_SUFFIXES = [
@@ -451,7 +449,7 @@ rules: {
                 namespacedPropertyName = constrainedPropertiesEntry.namespace?"'${constrainedPropertiesEntry.namespace}.${constrainedProperty.propertyName}'":constrainedProperty.propertyName
                 constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
                 javaScriptMessages += "${namespacedPropertyName}: {\n"
-                constraintNames = getConstraintNames(constrainedProperty).findAll { !CONSTRAINTS_NOT_SUPPORTED_BY_MESSAGE.contains(it) }
+                constraintNames = getConstraintNames(constrainedProperty)
                 javaScriptMessageCode = null
                 switch (constrainedProperty.propertyType) {
                     case Date:
@@ -519,6 +517,12 @@ rules: {
                             args << range.to
                             javaScriptMessageCode = "\t${javaScriptConstraint}: function() { return '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'; }"
                             break
+							
+														case "unique":
+														case "validator":
+														args << "' + \$('#${constrainedProperty.propertyName}').val() + '"
+														javaScriptMessageCode = "\t${javaScriptConstraint}: function() { return '${getMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyName, args, constraintName)}'; }"
+														break
                         }
                     } else {
                         def customConstraintsMap = grailsApplication.config.jqueryValidationUi.CustomConstraintsMap

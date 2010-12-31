@@ -49,53 +49,71 @@ jQuery.validator.addMethod("rangeDate", function(value, element, params) {
 	return this.optional(element) || dateValue >= params[0] && dateValue <= params[1];
 }, jQuery.validator.format('The date must be between {0} and {1}.'));
 
-//http://stackoverflow.com/questions/976384/jquery-validator-addmethod-custom-message
 jQuery.validator.addMethod("unique", function(value, element, params) { 
-    var validator = this;
-    params.data[element.name] = value;
-    params.data['constraint'] = 'unique';
-    $.post(params.url, params.data, function(response) {
-    	if (response == 'true'){ return true; }
-    	else {
-    		var errors = {};
-    		errors[element.name] =  response;
-    		validator.showErrors(errors);
-    		return false;
-    	}
-    }, 'text');
+  return JQueryValidatorUI.remote(this, "unique", value, element, params);
 }, '');
 
 jQuery.validator.addMethod("validator", function(value, element, params) { 
-    var validator = this;
-    params.data[element.name] = value;
-    params.data['constraint'] = 'validator';
-    $.post(params.url, params.data, function(response) {
-    	if (response == 'true'){ return true; }
-    	else {
-    		var errors = {};
-    		errors[element.name] =  response;
-    		validator.showErrors(errors);
-    		return false;
-    	}
-    }, 'text');
+	return JQueryValidatorUI.remote(this, "validator", value, element, params);
 }, '');
 
 jQuery.validator.addMethod("custom", function(value, element, params) { 
-    var validator = this;
-    params.data[element.name] = value;
-    $.post(params.url, params.data, function(response) {
-    	if (response == 'true'){ return true; }
-    	else {
-    		var errors = {};
-    		errors[element.name] =  response;
-    		validator.showErrors(errors);
-    		return false;
-    	}
-    }, 'text');
+	return JQueryValidatorUI.remote(this, null, value, element, params); // unknown constraint
 }, '');
 
 // http://www.24hourapps.com/2009/02/jquery-international-phone-number.html
 jQuery.validator.addMethod("phone", function(value, element, params) { 
 	return this.optional(element) || value.match(/^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/); 
 }, 'Invalid international phone number.');
+
+// amended from existing remote method
+JQueryValidatorUI = {
+  remote: function(validator, constraint, value, element, params) { 
+			if ( validator.optional(element) )
+				return "dependency-mismatch";
+			
+			var previous = validator.previousValue(element);
+			if (!validator.settings.messages[element.name] )
+				validator.settings.messages[element.name] = {};
+			previous.originalMessage = validator.settings.messages[element.name].remote;
+			validator.settings.messages[element.name].remote = previous.message;
+			
+			if ( previous.old !== value ) {
+				previous.old = value;
+				validator.startRequest(element);
+			  params.data[element.name] = value;
+			  if (constraint)
+			    params.data['constraint'] = constraint;
+				$.ajax($.extend(true, {
+					url: params.url,
+					mode: "abort",
+					port: "validate" + element.name,
+					dataType: "json",
+					data: params.data,
+					success: function(response) {
+						validator.settings.messages[element.name].remote = previous.originalMessage;
+						var valid = response === true;
+						if ( valid ) {
+							var submitted = validator.formSubmitted;
+							validator.prepareElement(element);
+							validator.formSubmitted = submitted;
+							validator.successList.push(element);
+							validator.showErrors();
+						} else {
+							var errors = {};
+							var message = (previous.message = response.message || validator.defaultMessage( element, constraint ));
+							errors[element.name] = $.isFunction(message) ? message(value) : message;
+							validator.showErrors(errors);
+						}
+						previous.valid = valid;
+						validator.stopRequest(element, valid);
+					}
+				}, params.url));
+				return "pending";
+			} else if( validator.pending[element.name] ) {
+				return "pending";
+			}
+			return previous.valid;
+		}	
+};
 	
