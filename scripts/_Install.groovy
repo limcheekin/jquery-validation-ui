@@ -97,7 +97,10 @@
 	
 	CustomConstraintsMap = [
 		phone:'true', // International phone number validation
-		phoneUS:'true'
+		phoneUS:'true',
+		alphanumeric:'true',
+		letterswithbasicpunc:'true',
+    lettersonly:'true'
 	]	
 }
 '''
