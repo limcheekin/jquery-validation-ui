@@ -453,18 +453,18 @@ rules: {
                 javaScriptMessageCode = null
                 switch (constrainedProperty.propertyType) {
                     case Date:
-                    javaScriptMessageCode = "\tdate: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}'"
+                    javaScriptMessageCode = "\tdate: '${getTypeMismatchMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyType, constrainedPropertiesEntry.namespace, constrainedProperty.propertyName)}'"
                     break
                     case Long:
                     case Integer:
                     case Short:
                     case BigInteger:
-                    javaScriptMessageCode = "\tdigits: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}'"
+                    javaScriptMessageCode = "\tdigits: '${getTypeMismatchMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyType, constrainedPropertiesEntry.namespace, constrainedProperty.propertyName)}'"
                     break
                     case Float:
                     case Double:
                     case BigDecimal:
-                    javaScriptMessageCode = "\tnumber: '${getTypeMismatchMessage(constrainedProperty.propertyType, constrainedProperty.propertyName)}'"
+                    javaScriptMessageCode = "\tnumber: '${getTypeMismatchMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyType, constrainedPropertiesEntry.namespace, constrainedProperty.propertyName)}'"
                     break
                 }
 
@@ -567,12 +567,31 @@ rules: {
         return message
     }
 	
-    private String getTypeMismatchMessage(Class propertyType, String propertyName) {
-        def messageSource = grailsAttributes.getApplicationContext().getBean("messageSource")
-        def locale = RCU.getLocale(request)
-        def code = "${TYPE_MISMATCH_MESSAGE_PREFIX}${propertyType.name}"
-        def defaultMessage = "Error message for ${code} undefined."
-        return messageSource.getMessage(code, [propertyName].toArray(), defaultMessage, locale)
+    private String getTypeMismatchMessage(Class validatableClass, Class propertyType, String propertyNamespace, String propertyName) {
+      def messageSource = grailsAttributes.getApplicationContext().getBean("messageSource")
+      def locale = RCU.getLocale(request)
+      def code = "${TYPE_MISMATCH_MESSAGE_PREFIX}${propertyType.name}"
+      def defaultMessage = "Error message for ${code} undefined."
+      def message
+		
+		  if (propertyNamespace) {
+				code = "${TYPE_MISMATCH_MESSAGE_PREFIX}${propertyNamespace}.${propertyName}"
+			} else {
+			  code = "${TYPE_MISMATCH_MESSAGE_PREFIX}${validatableClass.name}.${propertyName}"
+			}
+			message = messageSource.getMessage(code, null, null, locale)
+			
+			if (!message) {
+				code = "${TYPE_MISMATCH_MESSAGE_PREFIX}${propertyName}"
+				message = messageSource.getMessage(code, null, null, locale)
+			}
+			
+			if (!message) {
+				code = "${TYPE_MISMATCH_MESSAGE_PREFIX}${propertyType.name}"
+				message = messageSource.getMessage(code, [propertyName].toArray(), defaultMessage, locale)
+			}
+      
+			return message.encodeAsJavaScript() 
     }
 
     private Field findField(Class clazz, String name) {
