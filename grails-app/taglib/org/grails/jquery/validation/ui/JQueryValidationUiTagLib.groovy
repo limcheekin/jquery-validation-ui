@@ -570,7 +570,7 @@ rules: {
     private String getTypeMismatchMessage(Class validatableClass, Class propertyType, String propertyNamespace, String propertyName) {
       def messageSource = grailsAttributes.getApplicationContext().getBean("messageSource")
       def locale = RCU.getLocale(request)
-      def code = "${TYPE_MISMATCH_MESSAGE_PREFIX}${propertyType.name}"
+      def code
       def defaultMessage = "Error message for ${code} undefined."
       def message
 		
