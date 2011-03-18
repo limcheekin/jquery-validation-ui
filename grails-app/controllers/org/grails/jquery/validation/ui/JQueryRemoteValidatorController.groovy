@@ -16,6 +16,7 @@ package org.grails.jquery.validation.ui
 
 import org.codehaus.groovy.grails.validation.ConstrainedPropertyBuilder
 import org.springframework.validation.BeanPropertyBindingResult
+import org.codehaus.groovy.runtime.DefaultGroovyMethods
 
 /**
 *
@@ -34,9 +35,20 @@ class JQueryRemoteValidatorController {
 		def errors = new BeanPropertyBindingResult(validatableInstance, validatableInstance.class.name)
 		def constrainedProperty = constrainedProperties[params.property]
 		constrainedProperty.messageSource = grailsApplication.mainContext.messageSource
-		constrainedProperty.validate(validatableInstance, params[params.property], errors)
+
+		Object propertyValue 
+		if (constrainedProperty.propertyType == String) {
+			propertyValue = params[params.property]
+		} else {
+		  propertyValue = DefaultGroovyMethods."to${constrainedProperty.propertyType.simpleName}"(params[params.property])
+		}
+		
+		constrainedProperty.validate(validatableInstance, propertyValue, errors)
+		def fieldError = errors.getFieldError(params.property)
+		// println "fieldError = ${fieldError}, code = ${fieldError?.code}, params.constraint = ${params.constraint}"
+		
 		response.setContentType("text/json;charset=UTF-8")
-		if (errors.getFieldError(params.property)) {
+		if (fieldError && fieldError.code.indexOf(params.constraint) > -1) {
 			// if constraint is known then render false (use default message), 
 			// otherwise render custom message.
 			render params.constraint ? "false" : """{"message":"${message(error: errors.getFieldError(params.property))}"}"""
