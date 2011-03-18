@@ -24,7 +24,7 @@ jQuery.validator.addMethod("inList", function(value, element, params) {
 
 // matches: "[a-z]+" => letteronly
 jQuery.validator.addMethod("matches", function(value, element, param) {
-	return this.optional(element) || value.match(new RegExp("." + param + "$"));
+	return this.optional(element) || value.match(new RegExp(param));
 }, jQuery.validator.format('Value not matches the given regular expression "{0}".'));
 
 // notEqual: "ABC"
