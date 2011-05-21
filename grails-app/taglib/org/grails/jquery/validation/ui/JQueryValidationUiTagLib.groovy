@@ -420,6 +420,10 @@ rules: {
             remoteJavaScriptConstraints += ",\n\t\tconstraint: '${constraintName}'"
         }
 
+        if (constraintName.equals('unique')) {
+            remoteJavaScriptConstraints += ",\n\t\tid: \$('input:hidden#id').length ? \$('input:hidden#id').val() : '0'"
+        }
+
         remoteJavaScriptConstraints += "\n\t}\n\t}"
 
         return remoteJavaScriptConstraints

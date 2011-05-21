@@ -31,7 +31,14 @@ class JQueryRemoteValidatorController {
 	def validate = {		
 		def validatableClass = grailsApplication.classLoader.loadClass(params.validatableClass)
 		def constrainedProperties = jqueryValidationService.getConstrainedProperties(validatableClass)
-		def validatableInstance = validatableClass.newInstance()
+		
+		def validatableInstance 
+		if (!params.id || params.id.equals("0")) {
+			validatableInstance = validatableClass.newInstance()
+		} else {
+			validatableInstance = validatableClass.get(params.id.toLong())
+		}
+		
 		def errors = new BeanPropertyBindingResult(validatableInstance, validatableInstance.class.name)
 		def constrainedProperty = constrainedProperties[params.property]
 		constrainedProperty.messageSource = grailsApplication.mainContext.messageSource
