@@ -18,7 +18,7 @@ grails.project.dependency.resolution = {
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
         //mavenLocal()
-        mavenCentral()
+        //mavenCentral()
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
@@ -43,7 +43,7 @@ grails.project.dependency.resolution = {
 		compile(":webxml:1.4.1") {
 			export = false
 		}
-		build(":new-doc:0.3.1") {
+		build(":new-doc:0.3.2") {
 			export = false
 			excludes "xom"
 		}
