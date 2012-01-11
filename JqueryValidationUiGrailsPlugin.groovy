@@ -21,7 +21,7 @@
 */
 class JqueryValidationUiGrailsPlugin {
     // the plugin version
-    def version = "1.2.2"
+    def version = "1.2.3-SNAPSHOT"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.2.2 > *"
     // the other plugins this plugin depends on
@@ -31,7 +31,7 @@ class JqueryValidationUiGrailsPlugin {
             "grails-app/views/error.gsp"
     ]
 
-    def author = "Lim Chee Kin"
+    def author = "Lim Chee Kin, Brian Saville"
     def authorEmail = "limcheekin@vobject.com"
     def title = "JQuery Validation UI Plugin - Client Side Validation without writing JavaScript"
     def description = '''\
@@ -51,11 +51,15 @@ Javascript Validator + Remote Constraints + jQuery Validation plugin + qTip
 > jQuery Validation Engine
 {code}
 
- * Project Site and Documentation: http://code.google.com/p/jquery-validation-ui-plugin/
- * Support: http://code.google.com/p/jquery-validation-ui-plugin/issues/list
+ * Source code: http://code.google.com/p/jquery-validation-ui-plugin/
+ * Documentation: http://limcheekin.github.com/jquery-validation-ui
+ * Support: https://github.com/limcheekin/jquery-validation-ui/issues 
+ ** Older bugs available here: http://code.google.com/p/jquery-validation-ui-plugin/issues/list
  * Discussion Forum: http://groups.google.com/group/jquery-validation-ui-plugin
 '''
 
     // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/jquery-validation-ui"
+    def documentation = "http://limcheekin.github.com/jquery-validation-ui"
+	def issueManagement = [ system:"GitHub", url:"http://github.com/limcheekin/jquery-validation-ui/issues" ]
+	def scm = [ url:"http://github.com/limcheekin/jquery-validation-ui" ]
 }

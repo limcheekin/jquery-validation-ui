@@ -7,6 +7,7 @@ grails.project.dependency.resolution = {
     inherits("global") {
         // uncomment to disable ehcache
         // excludes 'ehcache'
+		excludes 'xml-apis'
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     repositories {
@@ -17,7 +18,7 @@ grails.project.dependency.resolution = {
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
         //mavenLocal()
-        //mavenCentral()
+        mavenCentral()
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
@@ -27,6 +28,9 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
         // runtime 'mysql:mysql-connector-java:5.1.5'
+		build("xom:xom:1.2.5") {
+			export = false
+		}
     }
 	plugins {
 		compile(":constraints:0.6.0")
@@ -38,6 +42,10 @@ grails.project.dependency.resolution = {
 		}
 		compile(":webxml:1.4.1") {
 			export = false
+		}
+		build(":new-doc:0.3.1") {
+			export = false
+			excludes "xom"
 		}
 	}
 }
