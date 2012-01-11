@@ -37,6 +37,10 @@ grails.project.dependency.resolution = {
 		build("xom:xom:1.2.5") {
 			export = false
 		}
+        compile("org.tmatesoft.svnkit:svnkit:1.3.5") {
+            excludes "jna", "trilead-ssh2", "sqljet"
+			export = false
+        }
     }
 	plugins {
 		compile(":constraints:0.6.0")
@@ -53,9 +57,12 @@ grails.project.dependency.resolution = {
 			export = false
 			excludes "xom"
 		}
-		build(":release:1.0.0") {
+		build(":release:1.0.1") {
 			export = false
-			excludes "xom"
+			excludes "svn"
+		}
+		build(':svn:1.0.2') {
+			export = false
 		}
 	}
 }
