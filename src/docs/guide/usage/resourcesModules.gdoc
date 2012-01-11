@@ -1,0 +1,8 @@
+This plugin is integrated with the [Grails resources plugin|http://grails.org/plugin/resources] by providing a single module definition.
+This may be used by using the @<r:require />@ tag from the resources plugin in your page that uses the validation tags:
+
+{code}
+<r:require modules="jquery-validation-ui" />
+{code}
+
+This correctly inserts all the CSS and javascript required to use this plugin.

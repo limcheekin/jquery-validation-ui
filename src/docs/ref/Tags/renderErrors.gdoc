@@ -1,0 +1,22 @@
+h1. renderErrors
+
+This tag renders the top validation messages and can be used to display both client-side and server-side validation messages. 
+It has the following attributes:
+* *render=true|false*: If @renderErrorsOnTop="true"@ for @<jqvalui:renderValidationScript />@, you need to set this to true to render validation messages.
+* *style*: Same as the style attribute of any HTML element, allows you to specify inline styles.
+
+h2. Sample
+
+Server-side validation messages:
+{code}
+<g:hasErrors bean="${personInstance}">
+  <jqvalui:renderErrors render="true" style="margin-bottom:10px">
+     <g:renderErrors bean="${personInstance}" as="list" />
+  </jqvalui:renderErrors>
+</g:hasErrors>
+{code}
+
+Client-side validation messages:
+{code}
+<jqvalui:renderErrors render="true" style="margin-bottom:10px"/>
+{code}

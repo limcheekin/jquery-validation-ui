@@ -1,0 +1,12 @@
+h1. resources
+
+{warning}This tag is deprecated in favor of the [resources plugin module definitions|guide:resourcesModules].{warning}
+
+This tag pulls in the resources needed such as JQuery Validation library and qTip library. You can pulls in javascript and CSS resources separately by 
+specify the type attribute such as @<jqvalui:resources type="js" />@ and @<jqvalui:resources type="css" />@.
+
+h2. Sample
+
+{code}
+<jqvalui:resources />
+{code}
