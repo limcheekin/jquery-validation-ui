@@ -2,6 +2,12 @@ grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
+
+// Disable SVN handling with release plugin
+grails.release.scm.enabled = false
+// Default repo to release is grailsCentral
+grails.project.repos.default = "grailsCentral"
+
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
@@ -44,6 +50,10 @@ grails.project.dependency.resolution = {
 			export = false
 		}
 		build(":new-doc:0.3.2") {
+			export = false
+			excludes "xom"
+		}
+		build(":release:1.0.0") {
 			export = false
 			excludes "xom"
 		}

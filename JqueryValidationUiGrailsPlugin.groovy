@@ -31,8 +31,13 @@ class JqueryValidationUiGrailsPlugin {
             "grails-app/views/error.gsp"
     ]
 
-    def author = "Lim Chee Kin, Brian Saville"
+    def author = "Lim Chee Kin"
     def authorEmail = "limcheekin@vobject.com"
+	// Additional developers
+	def developers = [
+		[name:"Brian Saville", email:"bksaville@gmail.com"],
+	]
+	
     def title = "JQuery Validation UI Plugin - Client Side Validation without writing JavaScript"
     def description = '''\
 Grails Validation mechanism is great, I like it! 
