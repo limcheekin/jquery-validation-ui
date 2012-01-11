@@ -1,0 +1,24 @@
+h1. renderValidationScript
+
+This tag generates validation javascript for given Domain Class or Command Object. It has the following attributes:
+* *for*: Required attribute. Specifies the validatable class (Domain Class or Command Object)
+* *also*: Nested class support by specifying additional Domain Classes or Command Objects. Validation javascript will be generated for the classes specified (If the value is more than one use a comma separated list).
+* *not*: Specifies properties that are ignored in client side validation (If the value is more than one, use a comma separated list).
+* *form*: Multiple forms are supported by specifying the form ids.
+* *submitHandler*: Optional attribute. Specifies the function name of an inline javascript function that is run to actually submit the form.  Ideal for using AJAX form submission.
+* *errorClass, validClass, onsubmit, renderErrorsOnTop*: When any of these attributes are specified, the specified value will take precedence over configuration. Applicable to current tag only.
+
+h2. Sample
+
+{code}
+<jqvalui:renderValidationScript 
+	for="org.grails.jquery.validation.ui.Person"
+	also="homeAddress, workAddress" 
+	not="homeAddress.number, workAddress.code"
+	form="personForm" 
+	errorClass="invalid" 
+	validClass="success" 
+	onsubmit="false" 
+	renderErrorsOnTop="true"
+/>
+{code}

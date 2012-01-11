@@ -1,0 +1,16 @@
+h1. renderError
+
+This tag render a validation message on the right and is used to display server-side validation messages only. 
+It has the following attributes:
+* *for*: Required attribute. Specifies which property the validation message is to be rendered for.
+* *style*: Same as the style attribute of any HTML element, allows you to specify inline styles.
+
+h2. Sample
+
+{code}
+<g:if test="${hasErrors(bean: personInstance, field: 'name', 'errors')}">
+  <jqvalui:renderError for="name" style="margin-top: -5px">
+    <g:eachError bean="${personInstance}" field="name"><g:message error="${it}" /></g:eachError>
+  </jqvalui:renderError>
+</g:if>
+{code}

@@ -1,0 +1,36 @@
+h4. 11-Jan-2012 1.2.3
+* Fixed Issue [#19|http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=19]: Allow overriding of submitHandler in generated validation block.
+* Fixed Issue [#20|http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=20]: Add module definitions to use with the resources plugin.
+* First published with the project code at GitHub.
+* Converted documentation to Grails Docs (no longer at Google Code).
+
+h4. 21-May-2011 1.2.2
+* Fixed Issue [#12|http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=12]: Unique validation doesn't work for update.
+
+h4. 18-Mar-2011 1.2.1
+* Fixed Issue [#9|http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=9]: Validation matches [a-zA-Z]+ doesn't support single character
+* Fixed Issue [#10|http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=10]: In java.lang.Bigdecimal also throw an error for unique and range.
+* Fixed Issue [#11|http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=11]: Type mismatch custom error message not working.
+
+h4. 18-Feb-2011 1.2
+* Implemented 3 new custom constraints from jquery validation additional methods: alphanumeric, letterswithbasicpunc and lettersonly. (@jqueryValidation.additionalMethods@ in @Config.groovy@ needs to set to @true@ to use these new custom constraints.)
+
+h4. 03-Jan-2011 1.1.1
+* Fixed issue [#2|http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=2]. Unable to submit the form when remote AJAX validation such as unique and validator constraints enabled.
+
+h4. 30-Dec-2010 1.1
+* Support Grails 1.2.2+.
+* Support extensibility by the [custom constraints|http://github.com/geofflane/grails-constraints] plugin
+* Implemented 2 custom constraints: phone and phoneUS (International and US phone number validation).
+* Updated person sample application to demo the phone constraints.
+
+h4. 22-Dec-2010 1.0.1
+* Make custom taglib work with [freemarker-tags|http://www.grails.org/plugin/freemarker-tags] plugin
+
+h4. 15-Dec-2010 1.0
+* Support All Standard Grails Constraints
+* Display Validation Messages on Right or Top
+* Display both server-side and client-side validation messages using tooltip (qTip) and same styles.
+* Internationalization Support
+* Remote AJAX Validation Support for unique, validator constraints
+* Type Validation Support

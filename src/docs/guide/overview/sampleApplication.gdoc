@@ -1,0 +1,10 @@
+If you are interested in the sample codes and screen shots I mentioned above, you can run the sample application in your own machine by installing
+it to your project using the following command:
+
+{code}
+grails install-sampleapp
+{code}
+
+{note}If the sample application of previous version of the plugin was installed, re-installing the sample application will not update the messages.properties file, 
+please update it manually by referring to the updated one 
+[here|http://github.com/limcheekin/jquery-validation-ui/blob/master/src/sample-app/grails-app/i18n/messages.properties].{note}

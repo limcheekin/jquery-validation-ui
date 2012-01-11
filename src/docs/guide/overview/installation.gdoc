@@ -1,0 +1,16 @@
+Install the plugin into your project with the following command:
+
+{code}
+grails install-plugin jquery-validation-ui
+{code}
+
+Alternatively, declare a plugin dependency in the @grails-app/conf/BuildConfig.groovy@ file:
+
+{code}
+plugins {
+	compile(\":jquery-validation-ui:latest.release\")
+}
+{code}
+
+{note}Replace @latest.release@ above with the latest version number, or put it in your BuildConfig verbatim and compile
+your application and the latest version will be installed automatically.{note}
