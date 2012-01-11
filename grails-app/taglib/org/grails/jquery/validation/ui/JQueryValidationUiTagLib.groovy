@@ -152,6 +152,7 @@ class JQueryValidationUiTagLib {
         String errorClass = attrs.errorClass?:config.errorClass?:"error"
         String validClass = attrs.validClass?:config.validClass?:"valid"
         def onsubmit = attrs.onsubmit ? Boolean.valueOf(attrs.onsubmit) : config.get("onsubmit", true)
+		def submitHandler = attrs.remove("submitHandler")
         def renderErrorsOnTop = attrs.renderErrorsOnTop ? Boolean.valueOf(attrs.renderErrorsOnTop) : config.get("renderErrorsOnTop", true)
         String renderErrorsOptions
         if (!forClass) {
@@ -215,6 +216,10 @@ onkeyup: false,
 errorClass: '${errorClass}',
 validClass: '${validClass}',			
 onsubmit: ${onsubmit},
+"""
+		if (submitHandler)
+			out << "submitHandler: ${submitHandler},"
+		out << """
 ${renderErrorsOptions}			
 rules: {
 """

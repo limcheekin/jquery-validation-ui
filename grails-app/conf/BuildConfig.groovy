@@ -28,4 +28,16 @@ grails.project.dependency.resolution = {
 
         // runtime 'mysql:mysql-connector-java:5.1.5'
     }
+	plugins {
+		compile(":constraints:0.6.0")
+		compile(":jquery:1.7.1")
+		compile(":jquery-validation:1.7.3")
+		compile(":resources:1.1.6") {
+			excludes "webxml"
+			export = false
+		}
+		compile(":webxml:1.4.1") {
+			export = false
+		}
+	}
 }
