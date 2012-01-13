@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2.1 JQuery Validation UI Plugin 1.2.3-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/overview.html"><strong>1</strong><span>Overview</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/usage.html"><strong>2</strong><span>Usage</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/appendices.html"><strong>3</strong><span>Appendices</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+	<p>Client Side Validation without writing JavaScript</p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/overview.html">&lt;&lt; <strong>1</strong><span>Overview</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/appendices.html"><strong>3</strong><span>Appendices</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2.1 Configuration - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Lim Chee Kin, Brian Saville</p>
+
+                    <p><strong>Version:</strong> 1.2.3-SNAPSHOT</p>
+                </div>
+
+                
+
+                
+
+<h2 id="configuration">2.1 Configuration</h2>
+After the plugin installed into your project, the following configurations will be appended to your project's <code>Config.groovy</code> file:<p class="paragraph"/><div class="code"><pre>// Added by the JQuery Validation plugin:
+jqueryValidation.packed = <span class="java&#45;keyword">true</span>
+jqueryValidation.cdn = <span class="java&#45;keyword">false</span>  // <span class="java&#45;keyword">false</span> or <span class="java&#45;quote">"microsoft"</span>
+jqueryValidation.additionalMethods = <span class="java&#45;keyword">false</span><p class="paragraph"/>
+// Added by the JQuery Validation UI plugin:
+jqueryValidationUi &#123;
+        errorClass = 'error'
+        validClass = 'valid'
+        onsubmit = <span class="java&#45;keyword">true</span>
+        renderErrorsOnTop = <span class="java&#45;keyword">false</span><p class="paragraph"/>        qTip &#123;
+          packed = <span class="java&#45;keyword">true</span>
+          classes = 'ui&#45;tooltip&#45;red ui&#45;tooltip&#45;shadow ui&#45;tooltip&#45;rounded'  
+        &#125;<p class="paragraph"/>        /&#42;
+          Grails constraints to JQuery Validation rules mapping <span class="java&#45;keyword">for</span> client side validation.
+          Constraint not found in the ConstraintsMap will trigger remote AJAX validation.
+        &#42;/
+        StringConstraintsMap = &#91;
+                blank:'required', // inverse: blank=<span class="java&#45;keyword">false</span>, required=<span class="java&#45;keyword">true</span>
+                creditCard:'creditcard',
+                email:'email',
+                inList:'inList',
+                minSize:'minlength',
+                maxSize:'maxlength',
+                size:'rangelength',
+                matches:'matches',
+                notEqual:'notEqual',
+                url:'url',
+                nullable:'required',
+                unique:'unique',
+                validator:'validator'
+        &#93;<p class="paragraph"/>        // <span class="java&#45;object">Long</span>, <span class="java&#45;object">Integer</span>, <span class="java&#45;object">Short</span>, <span class="java&#45;object">Float</span>, <span class="java&#45;object">Double</span>, BigInteger, BigDecimal
+        NumberConstraintsMap = &#91;
+                min:'min',
+                max:'max',
+                range:'range',
+                notEqual:'notEqual',
+                nullable:'required',
+                inList:'inList',
+                unique:'unique',
+                validator:'validator'
+        &#93;<p class="paragraph"/>        CollectionConstraintsMap = &#91;
+                minSize:'minlength',
+                maxSize:'maxlength',
+                size:'rangelength',
+                nullable:'required',
+                validator:'validator'
+        &#93;<p class="paragraph"/>        DateConstraintsMap = &#91;
+                min:'minDate',
+                max:'maxDate',
+                range:'rangeDate',
+                notEqual:'notEqual',
+                nullable:'required',
+                inList:'inList',
+                unique:'unique',
+                validator:'validator'
+        &#93;<p class="paragraph"/>        ObjectConstraintsMap = &#91;
+                nullable:'required',
+                validator:'validator'
+        &#93;<p class="paragraph"/>        CustomConstraintsMap = &#91;
+                phone:'<span class="java&#45;keyword">true</span>',
+                phoneUS:'<span class="java&#45;keyword">true</span>'
+        &#93;
+&#125;</pre></div><p class="paragraph"/>The first section is configuration of the dependent plugin - JQuery Validation. You can find out more about the description of 
+it's configuration at it's <a href="http://www.grails.org/plugin/jquery-validation" target="blank">project page</a>.<p class="paragraph"/>The second section is configuration items of the JQuery Validation UI plugin:
+<ul class="star">
+<li><strong class="bold">errorClass</strong> - This class used by JQuery Validation library to create error labels, to look for existing error labels and to add it to invalid elements.</li>
+<li><strong class="bold">validClass</strong> - This class is added to an element by JQuery Validation library after it was validated and considered valid.</li>
+<li><strong class="bold">onsubmit = true|false</strong> - Default is <code>true</code>. JQuery Validation library validates the form on submit. Set to <code>false</code> to use only other events for validation. The following code trigger validation and submit the form if all inputs are valid:</li>
+</ul><p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">if</span> ($('form:first').validate().form()) &#123;
+   $('form:first').submit();
+&#125;</pre></div>
+<ul class="star">
+<li><strong class="bold">renderErrorsOnTop = true|false</strong> - Default is <code>false</code>. Validation messages will display on the right of input element. Set to <code>true</code> to display all validation messages on the top of the form.</li>
+<li><strong class="bold">qTip.packed = true|false</strong> - Default is <code>true</code>. Set to <code>false</code> to view a readable .js file for development purpose.</li>
+<li><strong class="bold">qTip.classes</strong> - Specify the styles of qTip. Refer to qTip style <a href="http://craigsworks.com/projects/qtip2/docs/style/" target="blank">documentation</a>.</li>
+</ul><p class="paragraph"/>Client side validation enabled by JQuery Validation using Constraints Map, these Constraints Maps specify how Grails constraints map to JQuery Validation 
+rules such as <code>StringConstraintsMap</code>, <code>NumberConstraintsMap</code>, <code>CollectionConstraintsMap</code>, <code>DateConstraintsMap</code> and <code>ObjectConstraintsMap</code> (<code>ObjectConstraintsMap</code> is 
+catch-all map if the property is not belongs to any other Constraints Maps). Refer to 
+<a href="http://docs.jquery.com/Plugins/Validation#List_of_built-in_Validation_methods" target="blank">JQuery Validation documentation</a> for built-in validation rules supported by the library and 
+<a href="http://github.com/limcheekin/jquery-validation-ui/blob/master/web-app/js/jquery-validation-ui/grails-validation-methods.js" target="blank">additional rules</a> 
+written for this plugin.<p class="paragraph"/><blockquote class="note"><code>CustomConstraintsMap</code> configuration supported since 1.1 released. If previous version of the plugin was installed, upgrade to 1.1 version will not update 
+your Config.groovy file, please update it manually. Please see Extensibility in the <a href="../guide/single.html#features" class="guide">features</a> section for more information.</blockquote>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/overview.html">&lt;&lt; <strong>1</strong><span>Overview</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/appendices.html"><strong>3</strong><span>Appendices</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Tags</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Tags/renderError.html">renderError</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Tags/renderErrors.html">renderErrors</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Tags/renderValidationScript.html">renderValidationScript</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Tags/resources.html">resources</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

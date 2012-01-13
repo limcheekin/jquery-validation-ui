@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 JQuery Validation UI Plugin 1.2.3-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/overview.html"><strong>1</strong><span>Overview</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/usage.html"><strong>2</strong><span>Usage</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/appendices.html"><strong>3</strong><span>Appendices</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+	<p>Client Side Validation without writing JavaScript</p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/usage.html">&lt;&lt; <strong>2</strong><span>Usage</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+
+
+                <div class="project">
+                    <h1>3 Appendices - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Lim Chee Kin, Brian Saville</p>
+
+                    <p><strong>Version:</strong> 1.2.3-SNAPSHOT</p>
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#releaseNotes"><strong>3.1</strong><span>Release Notes</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#sitesUsing"><strong>3.2</strong><span>Sites Using This Plugin</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#todo"><strong>3.3</strong><span>To Do</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="appendices">3 Appendices</h1>
+This section contains miscellaneous housekeeping items and additional reference material.
+
+
+<h2 id="releaseNotes">3.1 Release Notes</h2>
+<h4>11-Jan-2012 1.2.3</h4>
+<ul class="star">
+<li>Fixed Issue <a href="http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=19" target="blank">#19</a>: Allow overriding of submitHandler in generated validation block.</li>
+<li>Fixed Issue <a href="http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=20" target="blank">#20</a>: Add module definitions to use with the resources plugin.</li>
+<li>First published with the project code at GitHub.</li>
+<li>Converted documentation to Grails Docs (no longer at Google Code).</li>
+</ul><p class="paragraph"/><h4>21-May-2011 1.2.2</h4>
+<ul class="star">
+<li>Fixed Issue <a href="http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=12" target="blank">#12</a>: Unique validation doesn't work for update.</li>
+</ul><p class="paragraph"/><h4>18-Mar-2011 1.2.1</h4>
+<ul class="star">
+<li>Fixed Issue <a href="http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=9" target="blank">#9</a>: Validation matches a-zA-Z+ doesn't support single character</li>
+<li>Fixed Issue <a href="http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=10" target="blank">#10</a>: In java.lang.Bigdecimal also throw an error for unique and range.</li>
+<li>Fixed Issue <a href="http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=11" target="blank">#11</a>: Type mismatch custom error message not working.</li>
+</ul><p class="paragraph"/><h4>18-Feb-2011 1.2</h4>
+<ul class="star">
+<li>Implemented 3 new custom constraints from jquery validation additional methods: alphanumeric, letterswithbasicpunc and lettersonly. (<code>jqueryValidation.additionalMethods</code> in <code>Config.groovy</code> needs to set to <code>true</code> to use these new custom constraints.)</li>
+</ul><p class="paragraph"/><h4>03-Jan-2011 1.1.1</h4>
+<ul class="star">
+<li>Fixed issue <a href="http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=2" target="blank">#2</a>. Unable to submit the form when remote AJAX validation such as unique and validator constraints enabled.</li>
+</ul><p class="paragraph"/><h4>30-Dec-2010 1.1</h4>
+<ul class="star">
+<li>Support Grails 1.2.2+.</li>
+<li>Support extensibility by the <a href="http://github.com/geofflane/grails-constraints" target="blank">custom constraints</a> plugin</li>
+<li>Implemented 2 custom constraints: phone and phoneUS (International and US phone number validation).</li>
+<li>Updated person sample application to demo the phone constraints.</li>
+</ul><p class="paragraph"/><h4>22-Dec-2010 1.0.1</h4>
+<ul class="star">
+<li>Make custom taglib work with <a href="http://www.grails.org/plugin/freemarker-tags" target="blank">freemarker-tags</a> plugin</li>
+</ul><p class="paragraph"/><h4>15-Dec-2010 1.0</h4>
+<ul class="star">
+<li>Support All Standard Grails Constraints</li>
+<li>Display Validation Messages on Right or Top</li>
+<li>Display both server-side and client-side validation messages using tooltip (qTip) and same styles.</li>
+<li>Internationalization Support</li>
+<li>Remote AJAX Validation Support for unique, validator constraints</li>
+<li>Type Validation Support</li>
+</ul><p class="paragraph"/>
+
+
+<h2 id="sitesUsing">3.2 Sites Using This Plugin</h2>
+<ul class="star">
+<li><a href="http://www.processcanvas.com/" target="blank">ProcessCanvas.com</a> - Create online workflow in minutes.</li>
+<li>Personal Information System of India e-Government.</li>
+</ul><p class="paragraph"/>
+
+
+<h2 id="todo">3.3 To Do</h2>
+<ul class="star">
+<li>Validation message (qTip) support with JQuery UI themes</li>
+<li>Support <a href="http://wiki.jqueryui.com/w/page/12138112/Tooltip" target="blank">JQuery UI tooltip</a> after it is released.</li>
+</ul><p class="paragraph"/>We welcome your feedback and would like to hear about your comments to the project. You are invited to join the project discussion 
+on <a href="http://github.com/limcheekin/jquery-validation-ui/issues" target="blank">GitHub</a> or on  
+<a href="http://groups.google.com/group/jquery-validation-ui-plugin" target="blank">Google Code</a>.  See you there!
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/usage.html">&lt;&lt; <strong>2</strong><span>Usage</span></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Tags</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Tags/renderError.html">renderError</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Tags/renderErrors.html">renderErrors</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Tags/renderValidationScript.html">renderValidationScript</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Tags/resources.html">resources</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
