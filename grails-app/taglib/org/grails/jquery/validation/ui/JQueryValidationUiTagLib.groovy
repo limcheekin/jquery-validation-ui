@@ -1,4 +1,4 @@
-/* Copyright 2010 the original author or authors.
+/* Copyright 2010-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,9 +152,11 @@ class JQueryValidationUiTagLib {
         String errorClass = attrs.errorClass?:config.errorClass?:"error"
         String validClass = attrs.validClass?:config.validClass?:"valid"
         def onsubmit = attrs.onsubmit ? Boolean.valueOf(attrs.onsubmit) : config.get("onsubmit", true)
-		def submitHandler = attrs.remove("submitHandler")
+		    def submitHandler = attrs.remove("submitHandler")
         def renderErrorsOnTop = attrs.renderErrorsOnTop ? Boolean.valueOf(attrs.renderErrorsOnTop) : config.get("renderErrorsOnTop", true)
         String renderErrorsOptions
+        Locale locale = RCU.getLocale(request)
+        
         if (!forClass) {
             throwTagError("${TAG_ERROR_PREFIX}Tag missing required attribute [for]")
         }
@@ -247,10 +249,10 @@ rules: {
             constrainedPropertiesEntries << childConstrainedPropertiesEntry
         }
     
-        out << createJavaScriptConstraints(constrainedPropertiesEntries)
+        out << createJavaScriptConstraints(constrainedPropertiesEntries, locale)
         out << "},\n" // end rules
         out << "messages: {\n"
-        out << createJavaScriptMessages(constrainedPropertiesEntries)
+        out << createJavaScriptMessages(constrainedPropertiesEntries, locale)
         out << "}\n" // end messages
         out << "});\n"
         out << "});\n"
@@ -274,7 +276,7 @@ rules: {
         return constraintsMap
     }
 	
-    private String createJavaScriptConstraints(List constrainedPropertiesEntries) {
+    private String createJavaScriptConstraints(List constrainedPropertiesEntries, Locale locale) {
         String javaScriptConstraints = ""
         def constraintsMap
         String javaScriptConstraint
@@ -305,7 +307,7 @@ rules: {
                     case Float:
                     case Double:
                     case BigDecimal:
-                    javaScriptConstraintCode = "\tnumber: true"
+                    javaScriptConstraintCode = "\t${(locale.country == 'br' || locale.country == 'de')?'numberDE':'number'}: true"
                     break
                 }
 								
@@ -442,7 +444,7 @@ rules: {
         return constraintNames
     }
 	  
-    private String createJavaScriptMessages(List constrainedPropertiesEntries) {
+    private String createJavaScriptMessages(List constrainedPropertiesEntries, Locale locale) {
         def constraintsMap
         def args = []
         String javaScriptMessages = ""
@@ -473,7 +475,10 @@ rules: {
                     case Float:
                     case Double:
                     case BigDecimal:
-                    javaScriptMessageCode = "\tnumber: '${getTypeMismatchMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyType, constrainedPropertiesEntry.namespace, constrainedProperty.propertyName)}'"
+                    if (locale.country == 'br' || locale.country == 'de')
+                      javaScriptMessageCode = "\tnumberDE: '${getTypeMismatchMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyType, constrainedPropertiesEntry.namespace, constrainedProperty.propertyName)}'"
+                    else
+                      javaScriptMessageCode = "\tnumber: '${getTypeMismatchMessage(constrainedPropertiesEntry.validatableClass, constrainedProperty.propertyType, constrainedPropertiesEntry.namespace, constrainedProperty.propertyName)}'"
                     break
                 }
 
