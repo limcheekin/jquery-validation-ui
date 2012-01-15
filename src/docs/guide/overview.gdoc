@@ -1,0 +1,19 @@
+Grails [Validation|http://grails.org/doc/latest/guide/7.%20Validation.html] mechanism is great, I like it!  However, it is just a server side validation 
+solution.  To build a comprehensive validation solution and highly interactive web application it has one missing important piece... Yes! It is client 
+side validation solution that support all standard Grails constraints.  Similar grails plugins such as [Javascript Validator|http://www.grails.org/plugin/javascript-validator]
+and [Remote Constraints|http://grails.org/plugin/remote-constraints] attempt to address this problem, but the outcome is less than satisfactory in my opinion. 
+I like the solution and [demo|http://www.position-relative.net/creation/formValidator/] published in the blog post titled 
+[A jQuery inline form validation, because validation is a mess|http://www.position-absolute.com/articles/jquery-form-validator-because-form-validation-is-a-mess/], 
+but unluckily it is not using the excellent [JQuery Validation plugin|http://bassistance.de/jquery-plugins/jquery-plugin-validation/] as it's validation engine.  
+It had it's own solution known as [jQuery Validation Engine|https://github.com/posabsolute/jQuery-Validation-Engine].
+
+The JQuery Validation UI Plugin brings Javascript Validator, Remote Constraints, [Custom Constraints|http://grails.org/plugin/constraints], jQuery Validation 
+plugin, and [qTip (jQuery tooltip plugin)|http://craigsworks.com/projects/qtip_new/] under the same root and delivers a solution that is more than the jQuery Validation Engine. 
+In short, when someone asks you what the JQuery Validation UI Plugin is, just show them the following code block: 
+
+{code}
+Javascript Validator + Remote Constraints + Custom Constraints + jQuery Validation plugin + qTip 
+> jQuery Validation Engine
+{code}
+
+I like the Grails's slogan: *"The search is really over!"*

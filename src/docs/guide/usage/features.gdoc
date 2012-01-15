@@ -1,0 +1,82 @@
+h3. Supports All Standard Grails Constraints
+
+As you can see in the @StringConstraintsMap@, all standard Grails constraints are supported by the plugin.
+
+h3. Display Validation Messages on Right or Top
+
+Display on right:
+
+!../img/messages-right.jpg!
+
+Display on top:
+
+!../img/messages-top.jpg!
+
+*Note:* To see the message style like the screen above, you need to edit line 109 of @web-app/css/main.css@ as per following code:
+
+{code}
+div.errors {
+    margin: 10px 0 5px 0;
+    padding: 5px 0 5px 0;
+}
+{code}
+
+Otherwise, you will see the message style like the screen below:
+
+!../img/messages-top-orig.jpg!
+
+h3. Extensibility
+
+Together with the [custom constraints|http://github.com/geofflane/grails-constraints] plugin, the plugin is fully extensible with your own custom validation logic.
+
+The plugin come with 2 custom constraints, phone and phoneUS (International and US phone number validation) which enabled by the following configuration:
+{code}
+CustomConstraintsMap = [
+    phone:'true',
+    phoneUS:'true'
+]
+{code}
+
+If you implement new custom constraints (both server-side and Javascript), you can enable it by adding the constraints to the @CustomConstraintsMap@, for example:
+{code}
+CustomConstraintsMap = [
+    phone:'true',
+    phoneUS:'true',
+    yourCustomConstraint:'Javascript Code'
+]
+{code}
+The @'Javascript Code'@ is Javascript code specific to your custom constraints.  This will be rendered by @<jqvalui:renderValidationScript />@ tag. Please refer to 
+source code of the server-side implementation of phone constraint 
+[here|http://github.com/limcheekin/jquery-validation-ui/blob/master/test/unit/org/grails/jquery/validation/ui/PhoneConstraintTests.groovy] 
+and the client-side implementation 
+[here|http://github.com/limcheekin/jquery-validation-ui/blob/master/web-app/js/jquery-validation-ui/grails-validation-methods.js] 
+(scroll down to bottom, the last method) to see how it was implemented.
+
+h3. Internationalization Support
+All client-side validation messages retrieve from messages.properties. So, both client-side and server-side validation using the same message bundle. 
+The plugin retrieve the validation message with following codes from top to bottom:
+
+{code}
+classFullName.property.constraint
+classFullName.property.constraint.error
+classFullName.property.constraint.invalid
+className.property.constraint
+className.property.constraint.error
+className.property.constraint.invalid
+{code}
+
+If it is not found, it will use the default message.
+
+h3. Type Validation Support
+The plugin supports type validation for @Date@, @Long@, @Integer@, @Short@, @BigInteger@, @Float@, @Double@, and @BigDecimal@ and retrieves the corresponding 
+validation message from @messages.properties@ file by using the following message codes:
+
+{code}
+typeMismatch.java.util.Date
+typeMismatch.java.lang.Double
+typeMismatch.java.lang.Integer
+typeMismatch.java.lang.Long
+typeMismatch.java.lang.Short
+typeMismatch.java.math.BigDecimal
+typeMismatch.java.math.BigInteger
+{code}

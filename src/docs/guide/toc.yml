@@ -1,0 +1,15 @@
+overview:
+  title: Overview
+  installation: Installation
+  sampleApplication: Person Sample Application
+usage:
+  title: Usage
+  configuration: Configuration
+  resourcesModules: Resources Plugin Modules
+  tags: Tags
+  features: Features
+appendices:
+  title: Appendices
+  releaseNotes: Release Notes
+  sitesUsing: Sites Using This Plugin
+  todo: To Do
