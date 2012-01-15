@@ -1,4 +1,4 @@
-/* Copyright 2010 the original author or authors.
+/* Copyright 2010-2012 the original author or authors.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 */
 class JqueryValidationUiGrailsPlugin {
     // the plugin version
-    def version = "1.2.2"
+    def version = "1.2.4"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.2.2 > *"
     // the other plugins this plugin depends on
@@ -33,6 +33,11 @@ class JqueryValidationUiGrailsPlugin {
 
     def author = "Lim Chee Kin"
     def authorEmail = "limcheekin@vobject.com"
+    // Additional developers
+    def developers = [
+     [name:"Brian Saville", email:"bksaville@gmail.com"],
+        ]
+            
     def title = "JQuery Validation UI Plugin - Client Side Validation without writing JavaScript"
     def description = '''\
 Grails Validation mechanism is great, I like it! 
@@ -47,15 +52,19 @@ JQuery Validation plugin as it's validation engine, it had it's own solution kno
 The JQuery Validation UI Plugin will bring Javascript Validator, Remote Constraints, jQuery Validation plugin and [qTip (jQuery tooltip plugin)|http://craigsworks.com/projects/qtip_new/] under the same root and 
 deliver solution more than the jQuery Validation Engine. In short, when someone ask you what is JQuery Validation UI Plugin, just show them the following code block:
 {code}
-Javascript Validator + Remote Constraints + jQuery Validation plugin + qTip 
+Javascript Validator + Remote Constraints + Custom Constraints + jQuery Validation plugin + qTip 
 > jQuery Validation Engine
 {code}
 
- * Project Site and Documentation: http://code.google.com/p/jquery-validation-ui-plugin/
- * Support: http://code.google.com/p/jquery-validation-ui-plugin/issues/list
+ * Source code: http://github.com/limcheekin/jquery-validation-ui
+ * Documentation: http://limcheekin.github.com/jquery-validation-ui
+ * Support: https://github.com/limcheekin/jquery-validation-ui/issues
+ ** Older bugs available here: http://code.google.com/p/jquery-validation-ui-plugin/issues/list
  * Discussion Forum: http://groups.google.com/group/jquery-validation-ui-plugin
 '''
 
     // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/jquery-validation-ui"
+    def documentation = "http://limcheekin.github.com/jquery-validation-ui"
+    def issueManagement = [ system:"GitHub", url:"http://github.com/limcheekin/jquery-validation-ui/issues" ]
+    def scm = [ url:"http://github.com/limcheekin/jquery-validation-ui" ]
 }

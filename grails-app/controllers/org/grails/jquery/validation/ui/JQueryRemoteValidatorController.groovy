@@ -1,4 +1,4 @@
-/* Copyright 2010 the original author or authors.
+/* Copyright 2010-2012 the original author or authors.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@ package org.grails.jquery.validation.ui
 
 import org.codehaus.groovy.grails.validation.ConstrainedPropertyBuilder
 import org.springframework.validation.BeanPropertyBindingResult
-import org.codehaus.groovy.runtime.DefaultGroovyMethods
 
 /**
 *
@@ -47,10 +46,12 @@ class JQueryRemoteValidatorController {
 		if (constrainedProperty.propertyType == String) {
 			propertyValue = params[params.property]
 		} else {
-		  propertyValue = DefaultGroovyMethods."to${constrainedProperty.propertyType.simpleName}"(params[params.property])
+      bindData(validatableInstance, params, [include: [params.property]])
+	    propertyValue = validatableInstance."${params.property}"		
 		}
 		
 		constrainedProperty.validate(validatableInstance, propertyValue, errors)
+		if(validatableInstance.isAttached()) validatableInstance.discard()
 		def fieldError = errors.getFieldError(params.property)
 		// println "fieldError = ${fieldError}, code = ${fieldError?.code}, params.constraint = ${params.constraint}"
 		
