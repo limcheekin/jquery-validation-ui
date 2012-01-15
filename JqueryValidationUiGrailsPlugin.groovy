@@ -1,4 +1,4 @@
-/* Copyright 2010 the original author or authors.
+/* Copyright 2010-2012 the original author or authors.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -53,11 +53,11 @@ JQuery Validation plugin as it's validation engine, it had it's own solution kno
 The JQuery Validation UI Plugin will bring Javascript Validator, Remote Constraints, jQuery Validation plugin and [qTip (jQuery tooltip plugin)|http://craigsworks.com/projects/qtip_new/] under the same root and 
 deliver solution more than the jQuery Validation Engine. In short, when someone ask you what is JQuery Validation UI Plugin, just show them the following code block:
 {code}
-Javascript Validator + Remote Constraints + jQuery Validation plugin + qTip 
+Javascript Validator + Remote Constraints + Custom Constraints + jQuery Validation plugin + qTip 
 > jQuery Validation Engine
 {code}
 
- * Source code: http://code.google.com/p/jquery-validation-ui-plugin/
+ * Source code: https://github.com/limcheekin/jquery-validation-ui
  * Documentation: http://limcheekin.github.com/jquery-validation-ui
  * Support: https://github.com/limcheekin/jquery-validation-ui/issues 
  ** Older bugs available here: http://code.google.com/p/jquery-validation-ui-plugin/issues/list
@@ -65,7 +65,7 @@ Javascript Validator + Remote Constraints + jQuery Validation plugin + qTip
 '''
 
     // URL to the plugin's documentation
-    def documentation = "http://limcheekin.github.com/jquery-validation-ui"
+  def documentation = "http://limcheekin.github.com/jquery-validation-ui"
 	def issueManagement = [ system:"GitHub", url:"http://github.com/limcheekin/jquery-validation-ui/issues" ]
 	def scm = [ url:"http://github.com/limcheekin/jquery-validation-ui" ]
 }
