@@ -361,7 +361,7 @@ rules: {
                             javaScriptConstraintCode += "]"
                             break
                             case "matches":
-                            javaScriptConstraintCode = "\t${javaScriptConstraint}: '${constrainedProperty.matches}'"
+                            javaScriptConstraintCode = "\t${javaScriptConstraint}: '${constrainedProperty.matches.replaceAll('\\\\', '\\\\\\\\')}'"
                             break
                             case "max":
                             javaScriptConstraintCode = "\t${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.max.time})" : constrainedProperty.max}"
