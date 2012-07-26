@@ -67,7 +67,7 @@ jQuery.validator.addMethod("phone", function(value, element, params) {
 }, 'Invalid international phone number.');
 
 // amended from existing remote method
-JQueryValidatorUI = {
+var JQueryValidatorUI = {
   remote: function(validator, constraint, value, element, params) { 
 			if ( validator.optional(element) )
 				return "dependency-mismatch";
