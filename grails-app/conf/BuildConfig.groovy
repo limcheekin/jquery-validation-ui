@@ -34,35 +34,14 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
         // runtime 'mysql:mysql-connector-java:5.1.5'
-		build("xom:xom:1.2.5") {
-			export = false
-		}
-        compile("org.tmatesoft.svnkit:svnkit:1.3.5") {
-            excludes "jna", "trilead-ssh2", "sqljet"
-			export = false
-        }
     }
 	plugins {
-		compile(":constraints:0.6.0")
-		compile(":jquery:1.7.1")
-		compile(":jquery-validation:1.7.3")
-		compile(":resources:1.1.6") {
-			excludes "webxml"
-			export = false
-		}
-		compile(":webxml:1.4.1") {
-			export = false
-		}
-		build(":new-doc:0.3.2") {
-			export = false
-			excludes "xom"
-		}
-		build(":release:1.0.1") {
-			export = false
-			excludes "svn"
-		}
-		build(':svn:1.0.2') {
-			export = false
-		}
+    runtime ":hibernate:$grailsVersion"
+    runtime ":jquery:1.7.2"
+		compile ":constraints:0.8.0" 
+		compile ":jquery-validation:1.7.3" 
+		runtime ":resources:1.1.6" 
+		build ":tomcat:$grailsVersion"
+		build ":release:2.0.3"
 	}
 }
