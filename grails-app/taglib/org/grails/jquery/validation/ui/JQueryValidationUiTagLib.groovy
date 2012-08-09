@@ -151,6 +151,11 @@ class JQueryValidationUiTagLib {
         String qTipClasses = config.qTip.classes?:""
         String errorClass = attrs.errorClass?:config.errorClass?:"error"
         String validClass = attrs.validClass?:config.validClass?:"valid"
+        String errorContainer = attrs.errorContainer?:config.errorContainer?:"#errorContainer"
+        String errorLabelContainer = attrs.errorLabelContainer?:config.errorLabelContainer?:"div.errors ul"
+        String errorWrapper = attrs.errorWrapper?:config.errorWrapper?:"li"
+        
+        
         def onsubmit = attrs.onsubmit ? Boolean.valueOf(attrs.onsubmit) : config.get("onsubmit", true)
 		    def submitHandler = attrs.remove("submitHandler")
         def renderErrorsOnTop = attrs.renderErrorsOnTop ? Boolean.valueOf(attrs.renderErrorsOnTop) : config.get("renderErrorsOnTop", true)
@@ -179,9 +184,9 @@ class JQueryValidationUiTagLib {
 		
         if (renderErrorsOnTop) {
             renderErrorsOptions = """
-errorContainer: '#errorContainer',
-errorLabelContainer: 'div.errors ul',
-wrapper: 'li',
+errorContainer: '$errorContainer',
+errorLabelContainer: '$errorLabelContainer',
+wrapper: '$errorWrapper',
 """	
         } else {
             renderErrorsOptions = """
