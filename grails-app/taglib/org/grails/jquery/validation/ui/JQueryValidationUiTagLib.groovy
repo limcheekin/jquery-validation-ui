@@ -162,6 +162,9 @@ class JQueryValidationUiTagLib {
         def qtip = attrs.qtip ? Boolean.valueOf(attrs.qtip) : config.get("qtip", false)
                 
 		    def submitHandler = attrs.remove("submitHandler")?:config.submitHandler?:null
+		    def highlightHandler = attrs.remove("highlight")?:config.highlight?:null
+		    def unhighlightHandler = attrs.remove("unhighlight")?:config.unhighlight?:null
+		    		    
 		    
         def renderErrorsOnTop = attrs.renderErrorsOnTop ? Boolean.valueOf(attrs.renderErrorsOnTop) : config.get("renderErrorsOnTop", true)
         String renderErrorsOptions = ""
@@ -191,8 +194,7 @@ class JQueryValidationUiTagLib {
             renderErrorsOptions = """
 errorContainer: '$errorContainer',
 errorLabelContainer: '$errorLabelContainer',
-errorElement: '$errorElement',
-wrapper: '$errorWrapper',
+wrapper: '$errorWrapper',	
 """	
         } else if (qtip) {
             renderErrorsOptions = """
@@ -227,12 +229,23 @@ var myForm = \$('${form?"#$form":"form:first"}');
 myForm.validate({
 onkeyup: $onkeyup,
 errorClass: '${errorClass}',
+errorElement: '$errorElement',	
 validClass: '${validClass}',			
 onsubmit: ${onsubmit},
 """
 
-		if (submitHandler)
+		if (submitHandler) {
 			out << "submitHandler: ${submitHandler},"
+		}
+		
+		if (highlightHandler) {
+			out << "\nhighlight: ${highlightHandler},"
+		}
+		
+		if (unhighlightHandler) {
+			out << "\nunhighlight: ${unhighlightHandler},"
+		}		
+				
 		out << """
 ${renderErrorsOptions}			
 rules: {
