@@ -153,13 +153,18 @@ class JQueryValidationUiTagLib {
         String validClass = attrs.validClass?:config.validClass?:"valid"
         String errorContainer = attrs.errorContainer?:config.errorContainer?:"#errorContainer"
         String errorLabelContainer = attrs.errorLabelContainer?:config.errorLabelContainer?:"div.errors ul"
+        String errorElement = attrs.errorElement?:config.errorElement?:"label"
         String errorWrapper = attrs.errorWrapper?:config.errorWrapper?:"li"
         
         
         def onsubmit = attrs.onsubmit ? Boolean.valueOf(attrs.onsubmit) : config.get("onsubmit", true)
-		    def submitHandler = attrs.remove("submitHandler")
+        def onkeyup = attrs.onkeyup ? Boolean.valueOf(attrs.onkeyup) : config.get("onkeyup", true)
+        def qtip = attrs.qtip ? Boolean.valueOf(attrs.qtip) : config.get("qtip", false)
+                
+		    def submitHandler = attrs.remove("submitHandler")?:config.submitHandler?:null
+		    
         def renderErrorsOnTop = attrs.renderErrorsOnTop ? Boolean.valueOf(attrs.renderErrorsOnTop) : config.get("renderErrorsOnTop", true)
-        String renderErrorsOptions
+        String renderErrorsOptions = ""
         Locale locale = RCU.getLocale(request)
         
         if (!forClass) {
@@ -186,9 +191,10 @@ class JQueryValidationUiTagLib {
             renderErrorsOptions = """
 errorContainer: '$errorContainer',
 errorLabelContainer: '$errorLabelContainer',
+errorElement: '$errorElement',
 wrapper: '$errorWrapper',
 """	
-        } else {
+        } else if (qtip) {
             renderErrorsOptions = """
 success: function(label)
 {
@@ -219,11 +225,12 @@ errorPlacement: function(error, element)
         out << """\$(function() {
 var myForm = \$('${form?"#$form":"form:first"}');
 myForm.validate({
-onkeyup: false,
+onkeyup: $onkeyup,
 errorClass: '${errorClass}',
 validClass: '${validClass}',			
 onsubmit: ${onsubmit},
 """
+
 		if (submitHandler)
 			out << "submitHandler: ${submitHandler},"
 		out << """
