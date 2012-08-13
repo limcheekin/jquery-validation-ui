@@ -200,7 +200,7 @@ wrapper: '$errorWrapper',
             renderErrorsOptions = """
 success: function(label)
 {
-	\$('[id=' + label.attr('for') + ']').qtip('destroy');
+	\$('[id="' + label.attr('for') + '"]').qtip('destroy');
 },
 errorPlacement: function(error, element)
 {

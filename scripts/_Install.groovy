@@ -105,7 +105,7 @@
 }
 '''
 		}
-		ant.echo '''
+		println '''
 ************************************************************
 * Your grails-app/conf/Config.groovy has been updated with *
 * default configurations of JQuery Validation UI;          *
