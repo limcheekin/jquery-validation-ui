@@ -6,7 +6,17 @@ This tag generates validation javascript for given Domain Class or Command Objec
 * *not*: Specifies properties that are ignored in client side validation (If the value is more than one, use a comma separated list).
 * *form*: Multiple forms are supported by specifying the form ids.
 * *submitHandler*: Optional attribute. Specifies the function name of an inline javascript function that is run to actually submit the form.  Ideal for using AJAX form submission.
-* *errorClass, validClass, onsubmit, renderErrorsOnTop*: When any of these attributes are specified, the specified value will take precedence over configuration. Applicable to current tag only.
+* *errorClass, validClass, onsubmit, renderErrorsOnTop, errorContainer, errorLabelContainer, errorElement, errorWrapper(wrapper), highlight, unhighlight, onkeyup, qtip*: When any of these attributes are specified, the specified value will take precedence over configuration. Applicable to current tag only.
+
+{note}
+errorContainer, errorLabelContainer, errorElement, errorWrapper(wrapper), highlight, unhighlight, onkeyup and qtip attributes supported since 1.3 released. 
+The added attributes in version 1.3 except qtip have equivalent options of the JavaScript validate method. 
+Please refer to the [validate options documentation|http://docs.jquery.com/Plugins/Validation/validate] for more information.
+
+The qtip attribute is added to enabled or disabled the display of error message as qtip.
+qtip is disabled (qtip = false) by default to support non-obtrusive error message display and 
+to make it possible to use the plugin in mobile HTML5 application.
+{note}
 
 h2. Sample
 

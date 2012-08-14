@@ -5,6 +5,6 @@ it to your project using the following command:
 grails install-sampleapp
 {code}
 
-{note}If the sample application of previous version of the plugin was installed, re-installing the sample application will not update the messages.properties file, 
-please update it manually by referring to the updated one 
-[here|http://github.com/limcheekin/jquery-validation-ui/blob/master/src/sample-app/grails-app/i18n/messages.properties].{note}
+{note}
+The command above not supported since 1.3 released, you may download the sample app created for [Grails 1.3.9 using Grails standard theme|http://jquery-validation-ui-plugin.googlecode.com/files/jqvalui-g139.zip] or [Grails 2.1.0 using Twitter Bootstrap theme|http://jquery-validation-ui-plugin.googlecode.com/files/jqvalui-g210.zip]. 
+{note}

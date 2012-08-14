@@ -1,3 +1,15 @@
+h4. 14-Aug-2012 1.3
+* Fixed Issue [#7|https://github.com/limcheekin/jquery-validation-ui/issues/7]: Links in jquery.qtip.css are not correct.
+* Added errorContainer, errorLabelContainer, errorElement, errorWrapper(wrapper), highlight, unhighlight, onkeyup and qtip attributes for renderValidationScript tag and configuration items. qtip = false (disabled), onkeyup = true (enabled) by default.
+* As qtip disabled by default, created jquery-validation-ui-qtip resource module to include qtip resources.
+* Remove install-sampleapp script and sample app codes. 
+* Created 2 sample apps: [one|http://jquery-validation-ui-plugin.googlecode.com/files/jqvalui-g139.zip] for Grails 1.3.9 using Grails standard theme, [another one|http://jquery-validation-ui-plugin.googlecode.com/files/jqvalui-g210.zip] for Grails 2.1.0 using Twitter Bootstrap theme. 
+
+h4. 29-Jul-2012 1.2.4
+* Fixed Issue [#8|https://github.com/limcheekin/jquery-validation-ui/issues/8]: Added backslash escaping for regex matches and updated version. (by bluesliverx)
+* Fixed Issue [#12|https://github.com/limcheekin/jquery-validation-ui/issues/12]: 'jQueryValidatorUI is not defined' error. (by [Kevin Stricker|https://github.com/mootinator/])
+* Fixed Issue [#13|https://github.com/limcheekin/jquery-validation-ui/issues/13]: Failed to resolve dependencies net.sf.json-lib:json-lib:2.4.
+
 h4. 11-Jan-2012 1.2.3
 * Fixed Issue [#19|http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=19]: Allow overriding of submitHandler in generated validation block.
 * Fixed Issue [#20|http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=20]: Add module definitions to use with the resources plugin.
