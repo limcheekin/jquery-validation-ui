@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>JQuery Validation UI Plugin 1.2.3-SNAPSHOT</title>
+    <title>JQuery Validation UI Plugin - Client Side Validation without writing JavaScript 1.3</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -47,7 +47,7 @@ function addJsClass(el) {
         
         
     </div>
-    <p>Client Side Validation without writing JavaScript</p>
+    <p>JQuery Validation UI Plugin - Client Side Validation without writing JavaScript</p>
 </div>
 
 
@@ -65,8 +65,14 @@ function addJsClass(el) {
 <li><strong class="bold">not</strong>: Specifies properties that are ignored in client side validation (If the value is more than one, use a comma separated list).</li>
 <li><strong class="bold">form</strong>: Multiple forms are supported by specifying the form ids.</li>
 <li><strong class="bold">submitHandler</strong>: Optional attribute. Specifies the function name of an inline javascript function that is run to actually submit the form.  Ideal for using AJAX form submission.</li>
-<li><strong class="bold">errorClass, validClass, onsubmit, renderErrorsOnTop</strong>: When any of these attributes are specified, the specified value will take precedence over configuration. Applicable to current tag only.</li>
-</ul><p class="paragraph"/><h2>Sample</h2><p class="paragraph"/><div class="code"><pre>&#60;jqvalui:renderValidationScript 
+<li><strong class="bold">errorClass, validClass, onsubmit, renderErrorsOnTop, errorContainer, errorLabelContainer, errorElement, errorWrapper(wrapper), highlight, unhighlight, onkeyup, qtip</strong>: When any of these attributes are specified, the specified value will take precedence over configuration. Applicable to current tag only.</li>
+</ul><p class="paragraph"/><blockquote class="note">
+errorContainer, errorLabelContainer, errorElement, errorWrapper(wrapper), highlight, unhighlight, onkeyup and qtip attributes supported since 1.3 released. 
+The added attributes in version 1.3 except qtip have equivalent options of the JavaScript validate method. 
+Please refer to the <a href="http://docs.jquery.com/Plugins/Validation/validate" target="blank">validate options documentation</a> for more information.<p class="paragraph"/>The qtip attribute is added to enabled or disabled the display of error message as qtip.
+qtip is disabled (qtip = false) by default to support non-obtrusive error message display and 
+to make it possible to use the plugin in mobile HTML5 application.
+</blockquote><p class="paragraph"/><h2>Sample</h2><p class="paragraph"/><div class="code"><pre>&#60;jqvalui:renderValidationScript 
 	<span class="java&#45;keyword">for</span>=<span class="java&#45;quote">"org.grails.jquery.validation.ui.Person"</span>
 	also=<span class="java&#45;quote">"homeAddress, workAddress"</span> 
 	not=<span class="java&#45;quote">"homeAddress.number, workAddress.code"</span>
