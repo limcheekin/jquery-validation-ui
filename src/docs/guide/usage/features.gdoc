@@ -6,11 +6,11 @@ h3. Display Validation Messages on Right or Top
 
 Display on right:
 
-!../img/messages-right.jpg!
+!messages-right.jpg!
 
 Display on top:
 
-!../img/messages-top.jpg!
+!messages-top.jpg!
 
 *Note:* To see the message style like the screen above, you need to edit line 109 of @web-app/css/main.css@ as per following code:
 
@@ -23,7 +23,7 @@ div.errors {
 
 Otherwise, you will see the message style like the screen below:
 
-!../img/messages-top-orig.jpg!
+!messages-top-orig.jpg!
 
 h3. Extensibility
 
