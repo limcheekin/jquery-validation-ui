@@ -27,6 +27,7 @@ import org.springframework.util.ReflectionUtils
  */
 class JQueryValidationUiTagLib {
     static namespace = "jqvalui"
+	/* TO BE REMOVED
     static final DEFAULT_ERROR_MESSAGE_CODES_MAP = [
         matches: "default.doesnt.match.message",
         url: "default.invalid.url.message",
@@ -50,10 +51,11 @@ class JQueryValidationUiTagLib {
 		  "error",
 		  "invalid"
     ]
-	  
+	  static final String TYPE_MISMATCH_MESSAGE_PREFIX = "typeMismatch."
+	  */
     static final String TAG_ERROR_PREFIX = "Tag [jqvalui:renderValidationScript] Error: "
 	
-    static final String TYPE_MISMATCH_MESSAGE_PREFIX = "typeMismatch."
+
 	  
     def jqueryValidationService
 	
@@ -274,17 +276,36 @@ rules: {
             constrainedPropertiesEntries << childConstrainedPropertiesEntry
         }
     
-        out << createJavaScriptConstraints(constrainedPropertiesEntries, locale)
+        out << jqueryValidationService.createJavaScriptConstraints(constrainedPropertiesEntries, locale)
         out << "},\n" // end rules
         out << "messages: {\n"
-        out << createJavaScriptMessages(constrainedPropertiesEntries, locale)
+        out << jqueryValidationService.createJavaScriptMessages(constrainedPropertiesEntries, locale)
         out << "}\n" // end messages
         out << "});\n"
         out << "});\n"
         out << "</script>\n"
     }
 	
+	private Field findField(Class clazz, String name) {
+		Field field
+		
+		if (name.indexOf('.') == -1) {
+			field = ReflectionUtils.findField(clazz, name)
+		} else {
+			Class declaringClass = clazz
+			def fieldNames = name.split("\\.")
+			for (fieldName in fieldNames) {
+				field = ReflectionUtils.findField(declaringClass, fieldName)
+				if (!field) {
+					throw new IllegalArgumentException("Property $name invalid!")
+				}
+				declaringClass = field.type
+			}
+		}
+		return field
+	}
 	
+/* TO BE REMOVED: Code moved to service class	
     private Map getConstraintsMap(Class propertyType) {
         def constraintsMap
         if (propertyType == String) {
@@ -632,25 +653,8 @@ rules: {
       
 			return message.encodeAsJavaScript() 
     }
+    */
 
-    private Field findField(Class clazz, String name) {
-        Field field
-		
-        if (name.indexOf('.') == -1) {
-            field = ReflectionUtils.findField(clazz, name)
-        } else {
-            Class declaringClass = clazz
-            def fieldNames = name.split("\\.")
-            for (fieldName in fieldNames) {
-                field = ReflectionUtils.findField(declaringClass, fieldName)
-                if (!field) {
-                    throw new IllegalArgumentException("Property $name invalid!")
-                }
-                declaringClass = field.type
-            }
-        }
-        return field
-    }
 }
 
 
