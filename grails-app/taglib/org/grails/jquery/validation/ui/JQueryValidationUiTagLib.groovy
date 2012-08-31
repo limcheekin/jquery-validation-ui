@@ -160,7 +160,7 @@ class JQueryValidationUiTagLib {
         
         
         def onsubmit = attrs.onsubmit ? Boolean.valueOf(attrs.onsubmit) : config.get("onsubmit", true)
-        def onkeyup = attrs.onkeyup ? Boolean.valueOf(attrs.onkeyup) : config.get("onkeyup", true)
+        def onkeyup = attrs.onkeyup ?: config.get("onkeyup", false)
         def qtip = attrs.qtip ? Boolean.valueOf(attrs.qtip) : config.get("qtip", false)
                 
 		    def submitHandler = attrs.remove("submitHandler")?:config.submitHandler?:null
