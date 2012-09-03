@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>JQuery Validation UI Plugin - Client Side Validation without writing JavaScript 1.3</title>
+        <title>JQuery Validation UI Plugin - Client Side Validation without writing JavaScript 1.4</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
@@ -56,7 +56,7 @@ function addJsClass(el) {
                         <div class="project">
                             <h1>JQuery Validation UI Plugin - Client Side Validation without writing JavaScript - Reference Documentation</h1>
                             <p><strong>Authors:</strong> Lim Chee Kin</p>
-                            <p><strong>Version:</strong> 1.3</p>
+                            <p><strong>Version:</strong> 1.4</p>
                             
                         </div>
 
@@ -263,7 +263,13 @@ This section contains miscellaneous housekeeping items and additional reference 
 
 
 <h2 id="releaseNotes">3.1 Release Notes</h2>
-<h4>14-Aug-2012 1.3</h4>
+<h4>01-Sep-2012 1.4</h4>
+<ul class="star">
+<li>Set onkeyup default to false to fix issue reported at this <a href="http://groups.google.com/forum/?fromgroups=#!topic/jquery-validation-ui-plugin/iu7U2v6jKMg" target="blank">thread</a>.</li>
+<li>Major code refactoring: move shared codes from JQueryValidationUiTagLib.groovy to JqueryValidationService.groovy.</li>
+<li>Fixed Issue <a href="http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=4" target="blank">#4</a>: In JQueryValidationUiTagLib.groovy, improve String concatenation using org.codehaus.groovy.grails.web.pages.FastStringWriter.</li>
+<li>Initial jquery-metadata support via jqueryValidationService.getValidationMetadatas and jqueryValidationService.createJavaScriptConstraints.</li>
+</ul><p class="paragraph"/><h4>14-Aug-2012 1.3</h4>
 <ul class="star">
 <li>Fixed Issue <a href="../ref/Httpsgithubcomlimcheekinjqueryvalidationuiissues7/#7.html" class="https://github.com/limcheekin/jquery-validation-ui/issues/7">#7</a>: Links in jquery.qtip.css are not correct.</li>
 <li>Added errorContainer, errorLabelContainer, errorElement, errorWrapper(wrapper), highlight, unhighlight, onkeyup and qtip attributes for renderValidationScript tag and configuration items. qtip = false (disabled), onkeyup = true (enabled) by default.</li>
