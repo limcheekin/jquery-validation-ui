@@ -83,7 +83,7 @@ class JqueryValidationService {
 			constrainedPropertyValues.eachWithIndex { constrainedProperty, propertyIndex  ->
 				namespacedPropertyName = constrainedPropertiesEntry.namespace?"'${constrainedPropertiesEntry.namespace}.${constrainedProperty.propertyName}'":constrainedProperty.propertyName
 				javaScriptConstraints << "${namespacedPropertyName}: "
-				javaScriptConstraints << createJavaScriptConstraints(constrainedProperty, locale, constrainedPropertiesEntry.namespace, false)
+				javaScriptConstraints << _createJavaScriptConstraints(constrainedProperty, locale, constrainedPropertiesEntry.namespace, false)
        if (entryIndex == constrainedPropertiesEntries.size() - 1 && 
 		       propertyIndex == constrainedPropertyValues.size() - 1) {
 				  javaScriptConstraints << "\n" 
@@ -105,7 +105,7 @@ class JqueryValidationService {
 			constrainedPropertyValues.eachWithIndex { constrainedProperty, propertyIndex  ->
 				namespacedPropertyName = constrainedPropertiesEntry.namespace?"'${constrainedPropertiesEntry.namespace}.${constrainedProperty.propertyName}'":constrainedProperty.propertyName
 				javaScriptMessages << "${namespacedPropertyName}: "
-				javaScriptMessages << createJavaScriptMessages(constrainedProperty, locale, constrainedPropertiesEntry.namespace)
+				javaScriptMessages << _createJavaScriptMessages(constrainedProperty, locale, constrainedPropertiesEntry.namespace)
        if (entryIndex == constrainedPropertiesEntries.size() - 1 && 
 		       propertyIndex == constrainedPropertyValues.size() - 1) {
 				  javaScriptMessages << "\n" 
@@ -118,7 +118,7 @@ class JqueryValidationService {
 	}
 	
 	String getValidationMetadatas(DefaultGrailsDomainClass domainClass, String[] properties, Locale locale) {
-		def constrainedProperties = getConstrainedProperties(domainClass, properties)
+		def constrainedProperties = _getConstrainedProperties(domainClass, properties)
 		String namespace
 		Integer dotIndex
 		Integer propertiesSize = properties.size()
@@ -127,8 +127,8 @@ class JqueryValidationService {
 		properties.eachWithIndex { p, i ->
 			dotIndex = p.indexOf('.')
 			namespace = dotIndex > -1 ? p.substring(0, dotIndex) : null
-			// println "$i) \"$p\": \"${createJavaScriptConstraints(constrainedProperties[p], locale, namespace, true) }\""
-			validationMetadatas << "\"$p\": \"${createJavaScriptConstraints(constrainedProperties[p], locale, namespace, true) }\""
+			// println "$i) \"$p\": \"${_createJavaScriptConstraints(constrainedProperties[p], locale, namespace, true) }\""
+			validationMetadatas << "\"$p\": \"${_createJavaScriptConstraints(constrainedProperties[p], locale, namespace, true) }\""
 			if (i < propertiesSize - 1) {
 				validationMetadatas << ", "
 			} else {
@@ -233,7 +233,7 @@ class JqueryValidationService {
 		return message
 	}        
 	
-	private String createJavaScriptConstraints(def constrainedProperty, Locale locale, String namespace, boolean forMetadata) {
+	private String _createJavaScriptConstraints(def constrainedProperty, Locale locale, String namespace, boolean forMetadata) {
 		FastStringWriter javaScriptConstraints = new FastStringWriter(forMetadata ? VALIDATION_RULE_LENGTH : VALIDATION_RULE_LENGTH + VALIDATION_MESSAGE_LENGTH)
 		def constraintsMap
 		String javaScriptConstraint
@@ -368,7 +368,7 @@ if (javaScriptConstraintCode) {
 }
 
 if (forMetadata) {
-	javaScriptConstraints << ", messages: ${createJavaScriptMessages(constrainedProperty, locale, namespace)}"
+	javaScriptConstraints << ", messages: ${_createJavaScriptMessages(constrainedProperty, locale, namespace)}"
 }
 
 javaScriptConstraints << "}"
@@ -376,7 +376,7 @@ javaScriptConstraints << "}"
 return javaScriptConstraints.toString()
 }
 
-private String createJavaScriptMessages(def constrainedProperty, Locale locale, String namespace) {
+private String _createJavaScriptMessages(def constrainedProperty, Locale locale, String namespace) {
 def args = []
 FastStringWriter javaScriptMessages = new FastStringWriter(VALIDATION_MESSAGE_LENGTH)
 String javaScriptConstraint
@@ -489,7 +489,7 @@ javaScriptMessages << "}"
 return javaScriptMessages.toString()
 }
 
-private getConstrainedProperties(DefaultGrailsDomainClass domainClass, String[] properties) {
+private _getConstrainedProperties(DefaultGrailsDomainClass domainClass, String[] properties) {
 	def constrainedProperties = domainClass.constrainedProperties.findAll{ k, v -> properties.contains(k) }
 	def childConstrainedProperties
 	def dotProperties = properties.findAll { it.indexOf('.') > -1 } // nested/embedded class
