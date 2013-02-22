@@ -345,7 +345,7 @@ class JqueryValidationService {
 			break
 		case "unique":
 		case "validator":
-			javaScriptConstraintCode = createRemoteJavaScriptConstraints(request.contextPath, constraintName, constrainedProperty.owningClass.name, constrainedProperty.propertyName)
+			javaScriptConstraintCode = createRemoteJavaScriptConstraints(RequestContextHolder.requestAttributes.contextPath, constraintName, constrainedProperty.owningClass.name, constrainedProperty.propertyName)
 			break
 	}
 } else {
@@ -354,7 +354,7 @@ class JqueryValidationService {
 		javaScriptConstraintCode = "$constraintName: ${customConstraintsMap[constraintName]}"
 	} else {
 		log.info "${constraintName} constraint not found even in the CustomConstraintsMap, use custom constraint and remote validation"
-		javaScriptConstraintCode = createRemoteJavaScriptConstraints(request.contextPath, constraintName, constrainedProperty.owningClass.name, constrainedProperty.propertyName)
+		javaScriptConstraintCode = createRemoteJavaScriptConstraints(RequestContextHolder.requestAttributes.contextPath, constraintName, constrainedProperty.owningClass.name, constrainedProperty.propertyName)
 	}
 }
 if (javaScriptConstraintCode) {
