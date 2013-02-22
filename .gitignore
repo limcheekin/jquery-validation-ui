@@ -12,3 +12,6 @@ target-eclipse
 .link_to_grails_plugins
 *.zip
 plugin.xml
+.idea
+*.iml
+*-plugin.xml

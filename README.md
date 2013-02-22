@@ -1,0 +1,1 @@
+See the latest documetation [here](http://limcheekin.github.com/jquery-validation-ui/).

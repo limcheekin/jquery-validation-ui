@@ -207,7 +207,7 @@ class JqueryValidationService {
 			message = messageSource.getMessage(code, [propertyName].toArray(), defaultMessage, locale)
 		}
 		
-		return message.encodeAsJavaScript() 
+		return message.encodeAsJavaScript()
 	}
 	
 	private String getMessage(Class validatableClass, String propertyName, def args, String constraintName, Locale locale) {
@@ -230,7 +230,7 @@ class JqueryValidationService {
 			code = DEFAULT_ERROR_MESSAGE_CODES_MAP[constraintName]
 			message = messageSource.getMessage(code, args == null ? null : args.toArray(), defaultMessage, locale)
 		}
-		return message
+		return message.encodeAsJavaScript()
 	}        
 	
 	private String _createJavaScriptConstraints(def constrainedProperty, Locale locale, String namespace, boolean forMetadata) {
