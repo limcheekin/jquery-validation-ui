@@ -1,3 +1,8 @@
+h4. 22-Feb-2013 1.4.1
+* Fixed Issue [#14|https://github.com/limcheekin/jquery-validation-ui/issues/14]: No such property: request for class: org.grails.jquery.validation.ui.JqueryValidationService. (by bluesliverx)
+* Fixed Issue [#15|https://github.com/limcheekin/jquery-validation-ui/issues/15]: i18n Messages that have single quotes in them are not escaped properly. (by bluesliverx)
+* Fixed Issue [#22|https://github.com/limcheekin/jquery-validation-ui/issues/22]:  Mixing private and public/protected methods... error. (by [Michael Kimsal|https://github.com/mgkimsal/])
+
 h4. 01-Sep-2012 1.4
 * Set onkeyup default to false to fix issue reported at this [thread|http://groups.google.com/forum/?fromgroups=#!topic/jquery-validation-ui-plugin/iu7U2v6jKMg].
 * Major code refactoring: move shared codes from JQueryValidationUiTagLib.groovy to JqueryValidationService.groovy.
