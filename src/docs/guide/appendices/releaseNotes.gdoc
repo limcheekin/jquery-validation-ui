@@ -1,7 +1,7 @@
 h4. 22-Feb-2013 1.4.1
-* Fixed Issue [#14|https://github.com/limcheekin/jquery-validation-ui/issues/14]: No such property: request for class: org.grails.jquery.validation.ui.JqueryValidationService. (by bluesliverx)
-* Fixed Issue [#15|https://github.com/limcheekin/jquery-validation-ui/issues/15]: i18n Messages that have single quotes in them are not escaped properly. (by bluesliverx)
-* Fixed Issue [#22|https://github.com/limcheekin/jquery-validation-ui/issues/22]:  Mixing private and public/protected methods... error. (by [Michael Kimsal|https://github.com/mgkimsal/])
+* Fixed Issue [#14|http://github.com/limcheekin/jquery-validation-ui/issues/14]: No such property: request for class: org.grails.jquery.validation.ui.JqueryValidationService. (by bluesliverx)
+* Fixed Issue [#15|http://github.com/limcheekin/jquery-validation-ui/issues/15]: i18n Messages that have single quotes in them are not escaped properly. (by bluesliverx)
+* Fixed Issue [#22|http://github.com/limcheekin/jquery-validation-ui/issues/22]:  Mixing private and public/protected methods... error. (by [Michael Kimsal|http://github.com/mgkimsal/])
 
 h4. 01-Sep-2012 1.4
 * Set onkeyup default to false to fix issue reported at this [thread|http://groups.google.com/forum/?fromgroups=#!topic/jquery-validation-ui-plugin/iu7U2v6jKMg].
@@ -10,16 +10,16 @@ h4. 01-Sep-2012 1.4
 * Initial jquery-metadata support via jqueryValidationService.getValidationMetadatas and jqueryValidationService.createJavaScriptConstraints.
 
 h4. 14-Aug-2012 1.3
-* Fixed Issue [#7|https://github.com/limcheekin/jquery-validation-ui/issues/7]: Links in jquery.qtip.css are not correct.
+* Fixed Issue [#7|http://github.com/limcheekin/jquery-validation-ui/issues/7]: Links in jquery.qtip.css are not correct.
 * Added errorContainer, errorLabelContainer, errorElement, errorWrapper(wrapper), highlight, unhighlight, onkeyup and qtip attributes for renderValidationScript tag and configuration items. qtip = false (disabled), onkeyup = true (enabled) by default.
 * As qtip disabled by default, created jquery-validation-ui-qtip resource module to include qtip resources.
 * Remove install-sampleapp script and sample app codes. 
 * Created 2 sample apps: [one|http://jquery-validation-ui-plugin.googlecode.com/files/jqvalui-g139.zip] for Grails 1.3.9 using Grails standard theme, [another one|http://jquery-validation-ui-plugin.googlecode.com/files/jqvalui-g210.zip] for Grails 2.1.0 using Twitter Bootstrap theme. 
 
 h4. 29-Jul-2012 1.2.4
-* Fixed Issue [#8|https://github.com/limcheekin/jquery-validation-ui/issues/8]: Added backslash escaping for regex matches and updated version. (by bluesliverx)
-* Fixed Issue [#12|https://github.com/limcheekin/jquery-validation-ui/issues/12]: 'jQueryValidatorUI is not defined' error. (by [Kevin Stricker|https://github.com/mootinator/])
-* Fixed Issue [#13|https://github.com/limcheekin/jquery-validation-ui/issues/13]: Failed to resolve dependencies net.sf.json-lib:json-lib:2.4.
+* Fixed Issue [#8|http://github.com/limcheekin/jquery-validation-ui/issues/8]: Added backslash escaping for regex matches and updated version. (by bluesliverx)
+* Fixed Issue [#12|http://github.com/limcheekin/jquery-validation-ui/issues/12]: 'jQueryValidatorUI is not defined' error. (by [Kevin Stricker|http://github.com/mootinator/])
+* Fixed Issue [#13|http://github.com/limcheekin/jquery-validation-ui/issues/13]: Failed to resolve dependencies net.sf.json-lib:json-lib:2.4.
 
 h4. 11-Jan-2012 1.2.3
 * Fixed Issue [#19|http://code.google.com/p/jquery-validation-ui-plugin/issues/detail?id=19]: Allow overriding of submitHandler in generated validation block.
