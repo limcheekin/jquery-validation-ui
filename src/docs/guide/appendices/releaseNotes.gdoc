@@ -1,3 +1,6 @@
+h4. 03-Mar-2013 1.4.2
+* Fixed missing import RequestContextHolder for issue [#14|http://github.com/limcheekin/jquery-validation-ui/issues/14]. (by [Luis Miguel Gonzalez|http://github.com/luismy/])
+ 
 h4. 22-Feb-2013 1.4.1
 * Fixed Issue [#14|http://github.com/limcheekin/jquery-validation-ui/issues/14]: No such property: request for class: org.grails.jquery.validation.ui.JqueryValidationService. (by bluesliverx)
 * Fixed Issue [#15|http://github.com/limcheekin/jquery-validation-ui/issues/15]: i18n Messages that have single quotes in them are not escaped properly. (by bluesliverx)
