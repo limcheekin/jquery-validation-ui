@@ -18,6 +18,7 @@ import org.codehaus.groovy.grails.validation.ConstrainedPropertyBuilder
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.web.pages.FastStringWriter
 import grails.util.GrailsNameUtils
+import org.springframework.web.context.request.RequestContextHolder
 
 /**
  *
