@@ -33,8 +33,10 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        // runtime 'mysql:mysql-connector-java:5.1.5'
-        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+        // runtime 'mysql:mysql-connector-java:5.1.5' 
+    if (grailsVersion[0..2].toDouble() >= 2.2) {
+      test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+        }
     }
 	plugins {
 		runtime ":hibernate:$grailsVersion"
