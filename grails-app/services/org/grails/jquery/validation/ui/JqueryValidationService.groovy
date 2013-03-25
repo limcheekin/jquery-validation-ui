@@ -35,6 +35,7 @@ class JqueryValidationService {
 		"error",
 		"invalid"
 	]   
+	static final String VALUE_PLACEHOLDER = "[[[JqueryValidationUIValuePlaceholder]]]"
 	static final DEFAULT_ERROR_MESSAGE_CODES_MAP = [
 		matches: "default.doesnt.match.message",
 		url: "default.invalid.url.message",
@@ -438,8 +439,9 @@ if (javaScriptConstraint) {
 		case "email":
 		case "url":
 			if (constrainedProperty.isCreditCard() || constrainedProperty.isEmail() || constrainedProperty.isUrl()) {
-				args << "' + \$('#${constrainedProperty.propertyName}').val() + '"
-				javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }"
+				args << VALUE_PLACEHOLDER
+				javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }".replace(
+					VALUE_PLACEHOLDER, "' + \$('#${constrainedProperty.propertyName}').val() + '");
 			}
 			break
 		case "inList":
@@ -449,31 +451,35 @@ if (javaScriptConstraint) {
 		case "min":
 		case "minSize":
 		case "notEqual":
-			args << "' + \$('#${constrainedProperty.propertyName}').val() + '"
+			args << VALUE_PLACEHOLDER
 			args << constrainedProperty."${constraintName}"
-			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }"
+			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }".replace(
+				VALUE_PLACEHOLDER, "' + \$('#${constrainedProperty.propertyName}').val() + '");
 			break
 		
 		case "range":
 		case "size":
-			args << "' + \$('#${constrainedProperty.propertyName}').val() + '"
+			args << VALUE_PLACEHOLDER
 			def range = constrainedProperty."${constraintName}"
 			args << range.from
 			args << range.to
-			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }"
+			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }".replace(
+				VALUE_PLACEHOLDER, "' + \$('#${constrainedProperty.propertyName}').val() + '");
 			break
 		
 		case "unique":
 		case "validator":
-			args << "' + \$('#${constrainedProperty.propertyName}').val() + '"
-			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }"
+			args << VALUE_PLACEHOLDER
+			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }".replace(
+				VALUE_PLACEHOLDER, "' + \$('#${constrainedProperty.propertyName}').val() + '");
 			break
 	}
 } else {
 	def customConstraintsMap = grailsApplication.config.jqueryValidationUi.CustomConstraintsMap
 	if (customConstraintsMap && customConstraintsMap[constraintName]) {
-		args << "' + \$('#${constrainedProperty.propertyName}').val() + '"
-		javaScriptMessageCode = "${constraintName}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }"
+		args << VALUE_PLACEHOLDER
+		javaScriptMessageCode = "${constraintName}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }".replace(
+			VALUE_PLACEHOLDER, "' + \$('#${constrainedProperty.propertyName}').val() + '");
 	} // else remote validation, using remote message.
 }
 if (javaScriptMessageCode) {
