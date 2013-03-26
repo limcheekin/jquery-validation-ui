@@ -1,3 +1,6 @@
+h4. 26-Mar-2013 1.4.4
+* Fixed issue [#24|http://github.com/limcheekin/jquery-validation-ui/issues/24]: issue #15 broke the display of field values in validation error messages. (by [jonroler|http://github.com/jonroler/])
+
 h4. 22-Mar-2013 1.4.3
 * Fixed spock 0.7.0-2.0 is not compatible with grails 2.1 issue [#23|http://github.com/limcheekin/jquery-validation-ui/issues/23]. (by [jbowen7|http://github.com/jbowen7/])
 
