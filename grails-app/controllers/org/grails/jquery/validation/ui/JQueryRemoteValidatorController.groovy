@@ -15,6 +15,7 @@
 package org.grails.jquery.validation.ui
 
 import org.codehaus.groovy.grails.validation.ConstrainedPropertyBuilder
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.validation.BeanPropertyBindingResult
 
 /**
@@ -34,6 +35,9 @@ class JQueryRemoteValidatorController {
 		def validatableInstance 
 		if (!params.id || params.id.equals("0")) {
 			validatableInstance = validatableClass.newInstance()
+			// Wire in spring dependencies...
+			applicationContext.autowireCapableBeanFactory?.autowireBeanProperties(
+				validatableInstance, AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, false)
 		} else {
 			validatableInstance = validatableClass.get(params.id.toLong())
 		}
@@ -62,7 +66,9 @@ class JQueryRemoteValidatorController {
         bindData(validatableInstance, serializedDataMap)
 
 		constrainedProperty.validate(validatableInstance, propertyValue, errors)
-		if(validatableInstance.isAttached()) validatableInstance.discard()
+		if (grailsApplication.isDomainClass(validatableInstance.getClass()) && validatableInstance.isAttached()) {
+			validatableInstance.discard()
+		}
 		def fieldError = errors.getFieldError(params.property)
 		// println "fieldError = ${fieldError}, code = ${fieldError?.code}, params.constraint = ${params.constraint}"
 		
