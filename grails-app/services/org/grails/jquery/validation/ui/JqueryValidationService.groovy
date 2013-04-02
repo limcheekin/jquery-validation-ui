@@ -172,7 +172,9 @@ class JqueryValidationService {
 				"\ttype: 'post',\n" +
 				"\tdata: {\n" +
 				"\t\tvalidatableClass: '${validatableClassName}',\n" +
-				"\t\tproperty: '${propertyName}'"
+				"\t\tproperty: '${propertyName}',\n"+
+				"\t\tserializedData: function() { return myForm.serialize() }\n"
+
 		
 		if (!constraintName.equals('unique') && !constraintName.equals('validator')) {
 			remoteJavaScriptConstraints += ",\n\t\tconstraint: '${constraintName}'"

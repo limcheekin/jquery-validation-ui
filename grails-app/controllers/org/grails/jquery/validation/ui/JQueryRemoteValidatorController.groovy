@@ -49,7 +49,18 @@ class JQueryRemoteValidatorController {
       bindData(validatableInstance, params, [include: [params.property]])
 	    propertyValue = validatableInstance."${params.property}"		
 		}
-		
+
+  		// Need to bind multiple fields from the form for custom validation with more than one parameter. 
+        def serializedDataMap = [:] 
+        def serializedData = params.serializedData.decodeURL().split("&")
+        serializedData.collect {
+            it = it.split("=")
+            if(it.size() == 2){ 
+                serializedDataMap.put(it[0],it[1])
+            }   
+        }   
+        bindData(validatableInstance, serializedDataMap)
+
 		constrainedProperty.validate(validatableInstance, propertyValue, errors)
 		if(validatableInstance.isAttached()) validatableInstance.discard()
 		def fieldError = errors.getFieldError(params.property)
