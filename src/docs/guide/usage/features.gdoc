@@ -29,8 +29,16 @@ h3. Extensibility
 
 Together with the [custom constraints|http://github.com/geofflane/grails-constraints] plugin, the plugin is fully extensible with your own custom validation logic.
 
-The plugin come with 2 custom constraints, phone and phoneUS (International and US phone number validation) which enabled by the following configuration:
+The plugin comes with 2 custom constraints, phone and phoneUS (International and US phone number validation) which are enabled by the following configuration:
 {code}
+StringConstraintsMap = [
+    blank:'required', // inverse: blank=false, required=true
+    creditCard:'creditcard',
+    ...,
+    phone:'phone',
+    phoneUS:'phoneUS',
+]
+
 CustomConstraintsMap = [
     phone:'true',
     phoneUS:'true'
@@ -39,13 +47,25 @@ CustomConstraintsMap = [
 
 If you implement new custom constraints (both server-side and Javascript), you can enable it by adding the constraints to the @CustomConstraintsMap@, for example:
 {code}
+StringConstraintsMap = [
+    blank:'required', // inverse: blank=false, required=true
+    creditCard:'creditcard',
+    ...,
+    phone:'phone',
+    phoneUS:'phoneUS',
+    yourCustomConstraint:'jqueryValidationPluginCustomConstraint'
+]
+
 CustomConstraintsMap = [
     phone:'true',
     phoneUS:'true',
-    yourCustomConstraint:'Javascript Code'
+    yourCustomConstraint:'jqueryValidationPluginCustomConstraintParamGeneratorJavascript'
 ]
 {code}
-The @'Javascript Code'@ is Javascript code specific to your custom constraints.  This will be rendered by @<jqvalui:renderValidationScript />@ tag. Please refer to 
+The @'jqueryValidationPluginCustomConstraint'@ is the name of the custom jquery validation plugin method to use for client-side validation. 
+The @'jqueryValidationPluginCustomConstraintParamGeneratorJavascript'@ is javascript that will be used to supply the parameter to
+the jqueryValidationPluginCustomConstraint.
+These values will be used by the @<jqvalui:renderValidationScript />@ tag. Please refer to the
 source code of the server-side implementation of phone constraint 
 [here|http://github.com/limcheekin/jquery-validation-ui/blob/master/test/unit/org/grails/jquery/validation/ui/PhoneConstraintTests.groovy] 
 and the client-side implementation 
@@ -54,7 +74,7 @@ and the client-side implementation
 
 h3. Internationalization Support
 All client-side validation messages retrieve from messages.properties. So, both client-side and server-side validation using the same message bundle. 
-The plugin retrieve the validation message with following codes from top to bottom:
+Prior to version 1.4.5, the plugin retrieved the validation message by trying the following codes in this order:
 
 {code}
 classFullName.property.constraint
@@ -65,7 +85,36 @@ className.property.constraint.error
 className.property.constraint.invalid
 {code}
 
-If it is not found, it will use the default message.
+As of version 1.4.5, the plugin now searches for an error message using the same error codes used by the grails server-side validation process. It also
+respects the @defaultMessageCode@, @defaultMessage@, and @failureCode@ settings on custom constraints when searching for an error message.  This means that
+it should now be much easier to know which message codes you should use in your message bundles since the server-side and client-side now use the same
+codes and search order. The one exception to this is if a grails constraint returns different message codes depending on the kind
+of validation failure.  For example, the grails size constraint returns @className.propertyName.size.toosmall@ or @className.propertyName.size.toobig@
+depending on whether the field value was too large or too small to satisfy the constraint. Since the plugin is simply generating the validation code,
+but doesn't yet know what the value will be, it has no way of knowing which validation message it should insert into the javascript. It may be possible
+to generate javascript that would handle both cases on the client in the future. However, for now the workaround is to use the message code
+@className.propertyName.size.error@ (or other standard grails message code for the size constraint that doesn't have 'toobig' or 'toosmall' in it) with a
+message that will work for when the value is too large or too small. Another option for the size constraint is to use the @minSize@ and @maxSize@ constraints
+instead of the @size@ constraint.
+
+Most pre-1.4.5 applications will be mostly compatible with the new behavior as most of the error codes used by the old behavior are also used by the standard
+grails validation process. The one difference is that in some cases the error codes with the suffix of '.invalid' or the error codes with no '.error' or
+'.invalid' suffix that were used by the plugin prior to 1.4.5 are not used by the standard grails validation process. If you have these message codes in your
+message bundles, you will need to update them to use a standard grails message code instead. For example, the message code @className.property.blank.invalid@
+is not a standard grails message code, but it was searched for by this plugin prior to version 1.4.5.  You would need to change your message bundles to use a
+standard grails message code instead. For example, the codes @className.property.blank.error@ or @className.property.blank@ are standard grails message codes for
+the blank constraint and would be valid replacements for the @className.property.blank.invalid message@ code that worked prior to grails 1.4.5. For backwards
+compatibility, you can add the following line:
+
+{code}
+useLegacyMessageCodes=false
+{code}
+
+to the @jqueryValidationUi@ section of your @Config.groovy@ to use the pre-1.4.5 message codes. However, please be aware that the pre-1.4.5 behavior is
+deprecated, so this option is only made available to allow users to upgrade the plugin and have time to convert their message codes to standard grails
+codes. The useLegacyMessageCodes option will be removed in a future release.
+
+If a message cannot be found from the message codes, the default message will be used.
 
 h3. Type Validation Support
 The plugin supports type validation for @Date@, @Long@, @Integer@, @Short@, @BigInteger@, @Float@, @Double@, and @BigDecimal@ and retrieves the corresponding 

@@ -62,12 +62,6 @@ class JQueryRemoteValidatorController {
 		// println "fieldError = ${fieldError}, code = ${fieldError?.code}, params.constraint = ${params.constraint}"
 		
 		response.setContentType("text/json;charset=UTF-8")
-		if (fieldError && fieldError.code.indexOf(params.constraint) > -1) {
-			// if constraint is known then render false (use default message), 
-			// otherwise render custom message.
-			render params.constraint ? "false" : """{"message":"${message(error: errors.getFieldError(params.property))}"}"""
-		} else {
-			render "true"
-		}
+		render fieldError ? """{"message":"${message(error: fieldError)}"}""" : "true"
 	}
 }
