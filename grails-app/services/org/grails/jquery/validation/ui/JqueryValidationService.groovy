@@ -18,7 +18,9 @@ import org.codehaus.groovy.grails.validation.ConstrainedPropertyBuilder
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.web.pages.FastStringWriter
 import grails.util.GrailsNameUtils
+import grails.validation.ValidationErrors
 import org.springframework.web.context.request.RequestContextHolder
+import net.zorched.grails.plugins.validation.CustomConstraintFactory
 
 /**
  *
@@ -53,7 +55,27 @@ class JqueryValidationService {
 		nullable: "default.null.message",
 		validator: "default.invalid.validator.message",
 		unique: "default.not.unique.message"
-	]    
+	]
+
+	static final GRAILS_CONSTRAINT_FAILURE_CODES_MAP = [
+		blank:'blank',
+		creditCard:'creditCard.invalid',
+		email:'email.invalid',
+		inList:'not.inList',
+		matches:'matches.invalid',
+		max:'max.exceeded',
+		maxSize:'maxSize.exceeded',
+		min:'min.notmet',
+		minSize:'minSize.notmet',
+		notEqual:'notEqual',
+		nullable:'nullable',
+		range:null,
+		size:null,
+		unique:'unique',
+		url:'url.invalid',
+		validator:'validator.invalid'
+	]
+
 	static transactional = false
 	def grailsApplication
 	def messageSource
@@ -158,12 +180,13 @@ class JqueryValidationService {
 		return constraintsMap
 	}
 	
-	private List getConstraintNames(def constrainedProperty) {
-		def constraintNames = constrainedProperty.appliedConstraints.collect { return it.name }
-		if (constraintNames.contains("blank") && constraintNames.contains("nullable")) {
-			constraintNames.remove("nullable") // blank constraint take precedence
+	private List getConstraints(def constrainedProperty) {
+		def constraints = []
+		constraints.addAll(constrainedProperty.appliedConstraints)
+		if (constraints.find{it.name == "blank"} && constraints.find {it.name == "nullable"}) {
+			constraints.removeAll {it.name == "nullable"} // blank constraint take precedence
 		}
-		return constraintNames
+		return constraints
 	}        
 	
 	private String createRemoteJavaScriptConstraints(String contextPath, String constraintName, String validatableClassName, String propertyName) {
@@ -212,25 +235,65 @@ class JqueryValidationService {
 		return message.encodeAsJavaScript()
 	}
 	
-	private String getMessage(Class validatableClass, String propertyName, def args, String constraintName, Locale locale) {
-		def code = "${validatableClass.name}.${propertyName}.${constraintName}"
-		def defaultMessage = "Error message for ${code} undefined."
-		def message = messageSource.getMessage(code, args == null ? null : args.toArray(), null, locale)
-		
-		ERROR_CODE_SUFFIXES.each { errorSuffix ->
-			message = message?:messageSource.getMessage("${code}.${errorSuffix}", args == null ? null : args.toArray(), null, locale)
-		}
-		if (!message) {
-			code = "${GrailsNameUtils.getPropertyName(validatableClass)}.${propertyName}.${constraintName}"
+	private String getMessage(def constraint, Class validatableClass, def args, Locale locale) {
+		def argArray = args == null ? null : args.toArray()
+		String defaultMessageCode
+		String message
+		// The preferred way to do things is to create an object to validate and pretend that a validation error occurred
+		// so that we simulate as closely as possible all of the error codes that grails generates on the server side.
+		// Another approach would be to copy the code from AbstractConstraint that does all the work of generating all of
+		// the message code possibilities and sticks them into the Errors object here.  That would allow us to eliminate the
+		// else case below.  It would come at the cost of having to make sure it was kept in sync with the grails source from
+		// which is was copied.  It would be nice if grails would refactor that bit of code into a utility class that we 
+		// could call...
+		if (!grailsApplication.config.jqueryValidationUi.useLegacyMessageCodes && constraint.respondsTo('rejectValue')) {
+			String failureCode
+			// Handle custom constraints correctly by getting the default message code, default message and the
+			// failure code to use.  It would be nice if the standard grails constraints also worked this way, but
+			// unfortunately we have to just hard code in the values for those constraints based on the grails
+			// documentation...
+			if (constraint instanceof CustomConstraintFactory.CustomConstraintClass) {
+				defaultMessageCode = constraint.constraint.getDefaultMessageCode()
+				failureCode = constraint.constraint.getFailureCode()
+			} else {
+				failureCode = GRAILS_CONSTRAINT_FAILURE_CODES_MAP[constraint.name]
+			}
+			// Fake a call to reject the constraint which should result in our validationErrors object having a single 
+			// FieldError in it which will contain a list of the standard grails message codes for validation failure
+			// in the correct search order...
+			def targetObject = validatableClass.newInstance()
+			def validationErrors = new ValidationErrors(targetObject, constraint.propertyName)
+			// Casts to string needed here to avoid ambiguous method overloading exceptions since sometimes the values of
+			// defaultMessageCode and failureCode are null...
+			constraint.rejectValue(targetObject, validationErrors, (String)defaultMessageCode, (String)failureCode, argArray)
+			message = validationErrors.fieldErrors[0].codes.findResult {messageSource.getMessage(it, argArray, null, locale)}
+		} else {
+			// This is not the common case, but could happen if someone implemented Constraint without subclassing
+			// AbstractConstraint. This is a rather inaccurate attempt at trying to find a message from a series of message code
+			// possibilities. It is inaccurate because the name of the constraint often can't be generated by tacking on '.error'
+			// or '.invalid' to the end of ${classname}.${constraint.propertyName}.${constraint.name}.  Also, for custom constraints, the user
+			// can define whatever message code they want, so we're not respecting that at all here.  Finally, for custom
+			// constraints, the default message code and default message can be defined, but there is no attempt to even try to
+			// find a default value for a custom constraint here...
+			def code = "${validatableClass.name}.${constraint.propertyName}.${constraint.name}"
 			message = messageSource.getMessage(code, args == null ? null : args.toArray(), null, locale)
-		}
+
+			ERROR_CODE_SUFFIXES.each { errorSuffix ->
+				message = message?:messageSource.getMessage("${code}.${errorSuffix}", argArray, null, locale)
+			}
+			if (!message) {
+				code = "${GrailsNameUtils.getPropertyName(validatableClass)}.${constraint.propertyName}.${constraint.name}"
+				message = messageSource.getMessage(code, argArray, null, locale)
+			}
 		
-		ERROR_CODE_SUFFIXES.each { errorSuffix ->
-			message = message?:messageSource.getMessage("${code}.${errorSuffix}", args == null ? null : args.toArray(), null, locale)
+			ERROR_CODE_SUFFIXES.each { errorSuffix ->
+				message = message?:messageSource.getMessage("${code}.${errorSuffix}", argArray, null, locale)
+			}
 		}
 		if (!message) {
-			code = DEFAULT_ERROR_MESSAGE_CODES_MAP[constraintName]
-			message = messageSource.getMessage(code, args == null ? null : args.toArray(), defaultMessage, locale)
+			String defaultMessage = "Property [{0}] of class [{1}] with value [{2}] is not valid"
+			defaultMessageCode = defaultMessageCode ?: DEFAULT_ERROR_MESSAGE_CODES_MAP[constraint.name]
+			message = messageSource.getMessage(defaultMessageCode, argArray, defaultMessage, locale)
 		}
 		return message.encodeAsJavaScript()
 	}        
@@ -243,7 +306,7 @@ class JqueryValidationService {
 		
 		javaScriptConstraints << "{ "
 		constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
-		def constraintNames = getConstraintNames(constrainedProperty)
+		def constraints = getConstraints(constrainedProperty)
 		
 		switch (constrainedProperty.propertyType) {
 			case Date:
@@ -264,17 +327,17 @@ class JqueryValidationService {
 		
 		if (javaScriptConstraintCode) {
 			javaScriptConstraints << javaScriptConstraintCode
-			if (constraintNames.size() > 0) {
+			if (constraints.size() > 0) {
 				javaScriptConstraints << ", "
 			} else {
 				javaScriptConstraints << " "
 			}
 		}
-		constraintNames.eachWithIndex { constraintName, i ->
-			javaScriptConstraint = constraintsMap[constraintName]
+		constraints.eachWithIndex { constraint, i ->
+			javaScriptConstraint = constraintsMap[constraint.name]
 			javaScriptConstraintCode = null
 			if (javaScriptConstraint) {
-				switch (constraintName) {
+				switch (constraint.name) {
 					case "nullable":
 						if (!constrainedProperty.isNullable()) {
 							javaScriptConstraintCode = "${javaScriptConstraint}: true"
@@ -347,21 +410,35 @@ class JqueryValidationService {
 			break
 		case "unique":
 		case "validator":
-			javaScriptConstraintCode = createRemoteJavaScriptConstraints(RequestContextHolder.requestAttributes.contextPath, constraintName, constrainedProperty.owningClass.name, constrainedProperty.propertyName)
+			javaScriptConstraintCode = createRemoteJavaScriptConstraints(RequestContextHolder.requestAttributes.contextPath, constraint.name, constrainedProperty.owningClass.name, constrainedProperty.propertyName)
+			break
+		default:
+			// custom constraint...
+			def customConstraintsMap = grailsApplication.config.jqueryValidationUi.CustomConstraintsMap
+			if (customConstraintsMap && customConstraintsMap[constraint.name]) {
+				javaScriptConstraintCode = "${javaScriptConstraint}: ${customConstraintsMap[constraint.name]}"
+			} else {
+				log.error "Failed to generate javascript validation rule for constraint '${constraint.name}' " +
+					"with javascript constraint '${javaScriptConstraint}':  missing custom constraints map " +
+					"entry. Ignoring this constraint and moving on."
+			}
 			break
 	}
 } else {
+	// Old way of generating the custom constraint javascript rule is to assume the javascript constraint validation method is
+	// the same name as the grails constraint. The preferred way to do things now is to create a map entry in the appropriate
+	// map (string, number, date, etc.) for the custom constraint as is done for the built-in grails constraints...
 	def customConstraintsMap = grailsApplication.config.jqueryValidationUi.CustomConstraintsMap
-	if (customConstraintsMap && customConstraintsMap[constraintName]) {
-		javaScriptConstraintCode = "$constraintName: ${customConstraintsMap[constraintName]}"
+	if (customConstraintsMap && customConstraintsMap[constraint.name]) {
+		javaScriptConstraintCode = "${constraint.name}: ${customConstraintsMap[constraint.name]}"
 	} else {
-		log.info "${constraintName} constraint not found even in the CustomConstraintsMap, use custom constraint and remote validation"
+		log.info "${constraint.name} constraint not found even in the CustomConstraintsMap, use custom constraint and remote validation"
 		javaScriptConstraintCode = createRemoteJavaScriptConstraints(RequestContextHolder.requestAttributes.contextPath, constraintName, constrainedProperty.owningClass.name, constrainedProperty.propertyName)
 	}
 }
 if (javaScriptConstraintCode) {
 	javaScriptConstraints << javaScriptConstraintCode
-	if (i < constraintNames.size() - 1) {
+	if (i < constraints.size() - 1) {
 		javaScriptConstraints << ", "
 	} else {
 		javaScriptConstraints << " "
@@ -382,13 +459,13 @@ private String _createJavaScriptMessages(def constrainedProperty, Locale locale,
 def args = []
 FastStringWriter javaScriptMessages = new FastStringWriter(VALIDATION_MESSAGE_LENGTH)
 String javaScriptConstraint
-def constraintNames
+def constraints
 String javaScriptMessageCode
 
 
 def constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
 javaScriptMessages << "{ "
-constraintNames = getConstraintNames(constrainedProperty)
+constraints = getConstraints(constrainedProperty)
 javaScriptMessageCode = null
 switch (constrainedProperty.propertyType) {
 case Date:
@@ -412,27 +489,27 @@ case BigDecimal:
 
 if (javaScriptMessageCode) {
 javaScriptMessages << javaScriptMessageCode
-if (constraintNames.size() > 0) {
+if (constraints.size() > 0) {
 	javaScriptMessages << ", "
 } else {
 	javaScriptMessages << " "
 }
 }
 
-constraintNames.eachWithIndex { constraintName, i ->
-javaScriptConstraint = constraintsMap[constraintName]
+constraints.eachWithIndex { constraint, i ->
+javaScriptConstraint = constraintsMap[constraint.name]
 javaScriptMessageCode = null
 args.clear()
 args = [constrainedProperty.propertyName, constrainedProperty.owningClass]
 if (javaScriptConstraint) {
-	switch (constraintName) {
+	switch (constraint.name) {
 		case "nullable":
 			if (!constrainedProperty.isNullable()) {
-				javaScriptMessageCode = "${javaScriptConstraint}: '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'"
+				javaScriptMessageCode = "${javaScriptConstraint}: '${getMessage(constraint, constrainedProperty.owningClass, args, locale)}'"
 			}
 		case "blank":
 			if (!constrainedProperty.isBlank()) {
-				javaScriptMessageCode = "${javaScriptConstraint}: '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'"
+				javaScriptMessageCode = "${javaScriptConstraint}: '${getMessage(constraint, constrainedProperty.owningClass, args, locale)}'"
 			}
 			break
 		case "creditCard":
@@ -440,7 +517,7 @@ if (javaScriptConstraint) {
 		case "url":
 			if (constrainedProperty.isCreditCard() || constrainedProperty.isEmail() || constrainedProperty.isUrl()) {
 				args << VALUE_PLACEHOLDER
-				javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }".replace(
+				javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constraint, constrainedProperty.owningClass, args, locale)}'; }".replace(
 					VALUE_PLACEHOLDER, "' + \$('#${constrainedProperty.propertyName}').val() + '");
 			}
 			break
@@ -452,39 +529,51 @@ if (javaScriptConstraint) {
 		case "minSize":
 		case "notEqual":
 			args << VALUE_PLACEHOLDER
-			args << constrainedProperty."${constraintName}"
-			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }".replace(
+			args << constrainedProperty."${constraint.name}"
+			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constraint, constrainedProperty.owningClass, args, locale)}'; }".replace(
 				VALUE_PLACEHOLDER, "' + \$('#${constrainedProperty.propertyName}').val() + '");
 			break
 		
 		case "range":
 		case "size":
 			args << VALUE_PLACEHOLDER
-			def range = constrainedProperty."${constraintName}"
+			def range = constrainedProperty."${constraint.name}"
 			args << range.from
 			args << range.to
-			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }".replace(
+			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constraint, constrainedProperty.owningClass, args, locale)}'; }".replace(
 				VALUE_PLACEHOLDER, "' + \$('#${constrainedProperty.propertyName}').val() + '");
 			break
 		
 		case "unique":
 		case "validator":
 			args << VALUE_PLACEHOLDER
-			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }".replace(
+			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constraint, constrainedProperty.owningClass, args, locale)}'; }".replace(
 				VALUE_PLACEHOLDER, "' + \$('#${constrainedProperty.propertyName}').val() + '");
+			break
+		default:
+			// custom constraint...
+			def customConstraintsMap = grailsApplication.config.jqueryValidationUi.CustomConstraintsMap
+			if (customConstraintsMap && customConstraintsMap[constraint.name]) {
+				args << VALUE_PLACEHOLDER
+				javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constraint, constrainedProperty.owningClass, args, locale)}'; }".replace(
+					VALUE_PLACEHOLDER, "' + \$('#${constrainedProperty.propertyName}').val() + '");
+			}
 			break
 	}
 } else {
+	// Old way of generating the custom constraint javascript message is to assume the javascript constraint validation method is
+	// the same name as the grails constraint. The preferred way to do things now is to create a map entry in the appropriate
+	// map (string, number, date, etc.) for the custom constraint as is done for the built-in grails constraints...
 	def customConstraintsMap = grailsApplication.config.jqueryValidationUi.CustomConstraintsMap
-	if (customConstraintsMap && customConstraintsMap[constraintName]) {
+	if (customConstraintsMap && customConstraintsMap[constraint.name]) {
 		args << VALUE_PLACEHOLDER
-		javaScriptMessageCode = "${constraintName}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }".replace(
+		javaScriptMessageCode = "${constraint.name}: function() { return '${getMessage(constraint, constrainedProperty.owningClass, args, locale)}'; }".replace(
 			VALUE_PLACEHOLDER, "' + \$('#${constrainedProperty.propertyName}').val() + '");
 	} // else remote validation, using remote message.
 }
 if (javaScriptMessageCode) {
 	javaScriptMessages << javaScriptMessageCode
-	if (i < constraintNames.size() - 1) {
+	if (i < constraints.size() - 1) {
 		javaScriptMessages << ", "
 	} else {
 		javaScriptMessages << " "

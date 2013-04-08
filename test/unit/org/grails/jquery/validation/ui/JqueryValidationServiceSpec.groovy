@@ -2,6 +2,7 @@ package org.grails.jquery.validation.ui
 
 import spock.lang.*
 import grails.test.mixin.*
+import org.codehaus.groovy.grails.validation.Constraint
 import org.springframework.context.MessageSource
 
 @TestFor(JqueryValidationService)
@@ -16,13 +17,16 @@ public class JqueryValidationServiceSpec extends Specification {
 	def "Escaped messages"() {
 		given:
 		MessageSource messageSource = Mock()
+		Constraint constraint = Mock()
 		service.messageSource = messageSource
 
 		when:
-		def message = service.getMessage(this.class, "prop", null, "max", null)
+		def message = service.getMessage(constraint, this.class, null, null)
 
 		then:
 		1 * messageSource.getMessage("${this.class.name}.prop.max", null, null, null) >> "my 'message'"
+		constraint.name >> 'max'
+		constraint.propertyName >> 'prop'
 		0 * _._
 		message=="my \\'message\\'"
 	}
