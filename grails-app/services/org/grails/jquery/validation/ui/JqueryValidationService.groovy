@@ -212,7 +212,7 @@ class JqueryValidationService {
 		return message.encodeAsJavaScript()
 	}
 	
-	private String getMessage(Class validatableClass, String propertyName, def args, String constraintName, Locale locale) {
+	private String getMessage(Class validatableClass, String propertyName, List args, String constraintName, Locale locale) {
 		def code = "${validatableClass.name}.${propertyName}.${constraintName}"
 		def defaultMessage = "Error message for ${code} undefined."
 		def message = messageSource.getMessage(code, args == null ? null : args.toArray(), null, locale)
