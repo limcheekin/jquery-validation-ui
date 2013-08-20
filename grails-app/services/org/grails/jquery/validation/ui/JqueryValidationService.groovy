@@ -178,7 +178,7 @@ class JqueryValidationService {
 			remoteJavaScriptConstraints += ",\n\t\tconstraint: '${constraintName}'"
 		}
 		
-		if (constraintName.equals('unique')) {
+		if (constraintName.equals('unique') && !grailsApplication.config.jqueryValidationUi.constraints.unique.noId) {
 			remoteJavaScriptConstraints += ",\n\t\tid: \$('input:hidden#id').length ? \$('input:hidden#id').val() : '0'"
 		}
 		

@@ -24,7 +24,7 @@ grails.project.dependency.resolution = {
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
         //mavenLocal()
-        //mavenCentral()
+        mavenCentral()
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
@@ -34,8 +34,8 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
         // runtime 'mysql:mysql-connector-java:5.1.5' 
-    if (grailsVersion[0..2].toDouble() >= 2.2) {
-      test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+        if (grailsVersion[0..2].toDouble() >= 2.2) {
+            test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
         }
     }
 	plugins {
@@ -49,5 +49,8 @@ grails.project.dependency.resolution = {
 			export = false
 			exclude "spock-grails-support"
 		}
+        build ':release:2.2.1', ':rest-client-builder:1.0.3', {
+            export = false
+        }
 	}
 }
