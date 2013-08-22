@@ -16,6 +16,7 @@ package org.grails.jquery.validation.ui
 
 import org.codehaus.groovy.grails.validation.ConstrainedPropertyBuilder
 import org.springframework.validation.BeanPropertyBindingResult
+import org.codehaus.groovy.grails.commons.GrailsClassUtils
 
 /**
 *
@@ -29,13 +30,14 @@ class JQueryRemoteValidatorController {
 
 	def validate = {		
 		def validatableClass = grailsApplication.classLoader.loadClass(params.validatableClass)
-		def constrainedProperties = jqueryValidationService.getConstrainedProperties(validatableClass)
-		
+		def constrainedProperties = jqueryValidationService.getConstrainedProperties(validatableClass)		
 		def validatableInstance 
+
 		if (!params.id || params.id.equals("0")) {
 			validatableInstance = validatableClass.newInstance()
 		} else {
-			validatableInstance = validatableClass.get(params.id.toLong())
+			def id = GrailsClassUtils.getPropertyType(validatableClass, 'id') == String?params.id:params.id.toLong()
+			validatableInstance = validatableClass.get(id)?:validatableClass.newInstance()
 		}
 		
 		def errors = new BeanPropertyBindingResult(validatableInstance, validatableInstance.class.name)
@@ -46,11 +48,14 @@ class JQueryRemoteValidatorController {
 		if (constrainedProperty.propertyType == String) {
 			propertyValue = params[params.property]
 		} else {
-      bindData(validatableInstance, params, [include: [params.property]])
-	    propertyValue = validatableInstance."${params.property}"		
+      		bindData(validatableInstance, params, [include: [params.property]])
+	    	propertyValue = validatableInstance."${params.property}"		
 		}
 		
-		constrainedProperty.validate(validatableInstance, propertyValue, errors)
+		if (propertyValue != validatableInstance."${params.property}") {
+			constrainedProperty.validate(validatableInstance, propertyValue, errors)
+		}
+
 		if(validatableInstance.isAttached()) validatableInstance.discard()
 		def fieldError = errors.getFieldError(params.property)
 		// println "fieldError = ${fieldError}, code = ${fieldError?.code}, params.constraint = ${params.constraint}"
