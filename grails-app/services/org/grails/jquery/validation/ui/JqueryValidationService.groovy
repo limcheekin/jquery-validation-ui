@@ -179,8 +179,13 @@ class JqueryValidationService {
 		}
 		
 		if (constraintName.equals('unique')) {
-			String idSelector = grailsApplication.config.jqueryValidationUi.constraints.unique.idSelector?:'input:hidden#id'
-			remoteJavaScriptConstraints += ",\n\t\tid: function() { return \$('$idSelector').length ? \$('$idSelector').val() : '0'; }"
+			String idSelector = grailsApplication.config.jqueryValidationUi."${GrailsNameUtils.getPropertyName(validatableClassName)}"."${propertyName}".unique.idSelector
+			idSelector = idSelector != '{}' ? idSelector : grailsApplication.config.jqueryValidationUi."${propertyName}".unique.idSelector
+			if (idSelector != '{}') {
+				remoteJavaScriptConstraints += ",\n\t\tid: function() { return \$('$idSelector').length ? \$('$idSelector').val() : '0'; }"
+			} else {
+				remoteJavaScriptConstraints += ",\n\t\tid: function() { return \$('input:hidden#id', myForm).length ? \$('input:hidden#id', myForm).val() : '0'; }"
+			} 
 		}
 		
 		remoteJavaScriptConstraints += "\n\t}\n\t}"

@@ -36,7 +36,7 @@ class JQueryRemoteValidatorController {
 		if (!params.id || params.id.equals("0")) {
 			validatableInstance = validatableClass.newInstance()
 		} else {
-			def id = GrailsClassUtils.getPropertyType(validatableClass, 'id') == String?params.id:params.id.toLong()
+			def id = GrailsClassUtils.getPropertyType(validatableClass, 'id') == Long?params.id.toLong():params.id
 			validatableInstance = validatableClass.get(id)?:validatableClass.newInstance()
 		}
 		
