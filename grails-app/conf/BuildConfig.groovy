@@ -39,18 +39,11 @@ grails.project.dependency.resolution = {
         }
     }
 	plugins {
-		runtime ":hibernate:$grailsVersion"
+		runtime ':hibernate:3.6.10.2'
 		runtime ":jquery:1.7.2"
 		compile ":constraints:0.6.0" 
 		compile ":jquery-validation:1.9" 
-		build ":tomcat:$grailsVersion"
-
-		test (':spock:0.7') {
-			export = false
-			exclude "spock-grails-support"
-		}
-        build ':release:2.2.1', ':rest-client-builder:1.0.3', {
-            export = false
-        }
+		build ':tomcat:7.0.42'
+        build ":release:3.0.1"
 	}
 }
