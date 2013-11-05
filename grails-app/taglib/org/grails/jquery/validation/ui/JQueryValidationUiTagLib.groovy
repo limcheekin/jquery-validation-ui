@@ -197,66 +197,7 @@ errorPlacement: function(error, element)
 },
 """
         }
-        /*out << '<script type="text/javascript">\n'
-        out << """\$(function() {
-var myForm = \$('${form?"#$form":"form:first"}');
-myForm.validate({
-onkeyup: $onkeyup,
-errorClass: '${errorClass}',
-errorElement: '$errorElement',	
-validClass: '${validClass}',			
-onsubmit: ${onsubmit},
-"""
 
-		if (submitHandler) {
-			out << "submitHandler: ${submitHandler},"
-		}
-		
-		if (highlightHandler) {
-			out << "\nhighlight: ${highlightHandler},"
-		}
-		
-		if (unhighlightHandler) {
-			out << "\nunhighlight: ${unhighlightHandler},"
-		}		
-				
-		out << """
-${renderErrorsOptions}			
-rules: {
-"""
-
-        ConstrainedPropertiesEntry rootConstrainedPropertiesEntry = new ConstrainedPropertiesEntry(validatableClass: validatableClass)
-        rootConstrainedPropertiesEntry.constrainedProperties = jqueryValidationService.getConstrainedProperties(validatableClass)
-        if (notProperties) {
-            def rootNotProperties = notProperties.findAll { it.indexOf('.') == -1 }
-            notProperties.removeAll(rootNotProperties)
-            rootConstrainedPropertiesEntry.constrainedProperties = rootConstrainedPropertiesEntry.constrainedProperties.findAll{ k, v -> !rootNotProperties.contains(k) }
-        }
-        def constrainedPropertiesEntries = [rootConstrainedPropertiesEntry]
-        ConstrainedPropertiesEntry childConstrainedPropertiesEntry
-        def childNotProperties
-        Class childValidatableClass
-        alsoProperties.each { propertyName ->
-            childValidatableClass = findField(validatableClass, propertyName).type
-            childConstrainedPropertiesEntry = new ConstrainedPropertiesEntry(namespace:propertyName, validatableClass: childValidatableClass)
-            childConstrainedPropertiesEntry.constrainedProperties = jqueryValidationService.getConstrainedProperties(childValidatableClass)
-            if (notProperties) {
-                childNotProperties = notProperties.collect {it.indexOf(propertyName) != -1 ? it.substring(propertyName.length() + 1) : null }
-                notProperties.removeAll(childNotProperties)
-                childConstrainedPropertiesEntry.constrainedProperties = childConstrainedPropertiesEntry.constrainedProperties.findAll{ k, v -> !childNotProperties.contains(k) }
-            }
-            constrainedPropertiesEntries << childConstrainedPropertiesEntry
-        }
-    
-        out << jqueryValidationService.createJavaScriptConstraints(constrainedPropertiesEntries, locale)
-        out << "},\n" // end rules
-        out << "messages: {\n"
-        out << jqueryValidationService.createJavaScriptMessages(constrainedPropertiesEntries, locale)
-        out << "}\n" // end messages
-        out << "});\n"
-        out << "});\n"
-        out << "</script>\n"
-        */
         ConstrainedPropertiesEntry rootConstrainedPropertiesEntry = new ConstrainedPropertiesEntry(validatableClass: validatableClass)
         rootConstrainedPropertiesEntry.constrainedProperties = jqueryValidationService.getConstrainedProperties(validatableClass)
         if (notProperties) {
