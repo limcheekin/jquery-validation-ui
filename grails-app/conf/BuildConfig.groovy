@@ -23,7 +23,7 @@ grails.project.dependency.resolution = {
 
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
-        //mavenLocal()
+        mavenLocal()
         mavenCentral()
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
@@ -37,13 +37,15 @@ grails.project.dependency.resolution = {
         if (grailsVersion[0..2].toDouble() >= 2.2) {
             test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
         }
+        //build "org.springframework:spring-orm:3.2.5.RELEASE"
     }
 	plugins {
-		runtime ':hibernate:3.6.10.2'
+        if (grailsVersion[0..2].toDouble() >= 2.3) {
+		  runtime ':hibernate:3.6.10.2'
+        }
 		runtime ":jquery:1.7.2"
 		compile ":constraints:0.6.0" 
 		compile ":jquery-validation:1.9" 
-		build ':tomcat:7.0.42'
         build ":release:3.0.1"
 	}
 }
