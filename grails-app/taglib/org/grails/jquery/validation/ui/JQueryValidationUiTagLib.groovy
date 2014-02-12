@@ -178,22 +178,49 @@ success: function(label)
 },
 errorPlacement: function(error, element)
 {
-	if (\$(error).text())
-	\$(element).filter(':not(.${validClass})').qtip({
-		overwrite: true,
-		content: error,
-		position: { my: 'left center', at: 'right center' },
-		show: {
-			event: false,
-			ready: true
-		},
-		hide: false,
-		style: {
-			widget: ${jQueryUiStyle},
-			classes: '${qTipClasses}',
-			tip: true
+	if (\$(error).text()) {
+		var errorTarget = \$('#' + element[0].name + 'Target');
+		if(errorTarget[0]) {
+			\$(element).filter(':not(.${validClass})').qtip({
+				overwrite: true,
+				content: error,
+				position: {
+					my: 'left center',
+					at: 'right center',
+					target: errorTarget
+				},
+				show: {
+					event: false,
+					ready: true
+				},
+				hide: false,
+				style: {
+					widget: ${jQueryUiStyle},
+					classes: '${qTipClasses}',
+					tip: true
+				}
+			});
+		} else {
+			\$(element).filter(':not(.${validClass})').qtip({
+				overwrite: true,
+				content: error,
+				position: {
+					my: 'left center',
+					at: 'right center'
+				},
+				show: {
+					event: false,
+					ready: true
+				},
+				hide: false,
+				style: {
+					widget: ${jQueryUiStyle},
+					classes: '${qTipClasses}',
+					tip: true
+				}
+			});
 		}
-	});
+	}
 },
 """
         }
