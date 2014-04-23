@@ -18,6 +18,8 @@
 * @since 1.4.8
 --%>
 
+<%@page defaultCodec="none" %>
+
 $(function() {
     var myForm = $("${form?"#${form}":"form:first"}");
     myForm.validate({
