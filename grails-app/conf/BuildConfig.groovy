@@ -35,7 +35,9 @@ grails.project.dependency.resolution = {
 
         // runtime 'mysql:mysql-connector-java:5.1.5' 
         if (grailsVersion[0..2].toDouble() >= 2.2) {
-            test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+            test("org.spockframework:spock-grails-support:0.7-groovy-2.0"){
+            	export = false
+            }
         }
         //build "org.springframework:spring-orm:3.2.5.RELEASE"
     }
