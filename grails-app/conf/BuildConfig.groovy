@@ -41,7 +41,9 @@ grails.project.dependency.resolution = {
     }
 	plugins {
         if (grailsVersion[0..2].toDouble() >= 2.3) {
-		  runtime ':hibernate:3.6.10.2'
+		  runtime(':hibernate:3.6.10.2'){
+		  	export = false
+		  }
         }
 		runtime ":jquery:1.7.2"
 		compile ":constraints:0.6.0" 
