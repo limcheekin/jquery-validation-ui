@@ -31,23 +31,6 @@ class JQueryValidationUiTagLib {
 
     def jqueryValidationService
 	
-    def resources = { attrs, body ->
-        String type = attrs.remove("type")
-        def packed 
-        if (!type) {
-            packed = grailsApplication.config.jqueryValidationUi.qTip.get("packed", true)
-            renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/qTip", file:"jquery.qtip.${packed?'pack.js':'js'}")
-            renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/jquery-validation-ui", file:"grails-validation-methods.js")
-            renderCSS g.resource(plugin:"jqueryValidationUi", dir:"css/qTip", file:"jquery.qtip.css")
-        } else if (type.equals("js")) {
-            packed = grailsApplication.config.jqueryValidationUi.qTip.get("packed", true)
-            renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/qTip", file:"jquery.qtip.${packed?'pack.js':'js'}")
-            renderJavaScript g.resource(plugin:"jqueryValidationUi", dir:"js/jquery-validation-ui", file:"grails-validation-methods.js")
-        } else if (type.equals("css")) {
-            renderCSS g.resource(plugin:"jqueryValidationUi", dir:"css/qTip", file:"jquery.qtip.css")
-        }
-    }
-	
     def renderErrors = { attrs, body ->
         def renderErrorsOnTop = attrs.render ? Boolean.valueOf(attrs.render) : grailsApplication.config.jqueryValidationUi.get("renderErrorsOnTop", true)
         if (renderErrorsOnTop) {
@@ -105,14 +88,6 @@ class JQueryValidationUiTagLib {
     private String getConnectorColor() {
         def jQueryUiStyle = grailsApplication.config.jqueryValidationUi.qTip.get("jQueryUiStyle", false)
         return "rgb(217, 82, 82)"
-    }
-	
-    private renderJavaScript(def url) {
-        out << '<script type="text/javascript" src="' + url + '"></script>\n'
-    }
-	
-    private renderCSS(def url) {
-        out << '<link rel="stylesheet" type="text/css" media="screen" href="' + url + '" />\n'
     }
 	
     def renderValidationScript = { attrs, body ->
