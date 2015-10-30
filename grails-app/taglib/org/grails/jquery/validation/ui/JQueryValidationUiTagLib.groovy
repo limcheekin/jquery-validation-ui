@@ -154,7 +154,7 @@ success: function(label)
 errorPlacement: function(error, element)
 {
 	if (\$(error).text()) {
-		var errorTarget = \$('#' + element[0].name + 'Target');
+		var errorTarget = \$('#' + element[0].id + 'Target');
 		if(errorTarget[0]) {
 			\$(element).filter(':not(.${validClass})').qtip({
 				overwrite: true,
