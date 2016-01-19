@@ -223,7 +223,7 @@ errorPlacement: function(error, element)
             constrainedPropertiesEntries << childConstrainedPropertiesEntry
         }        
         String rules = jqueryValidationService.createJavaScriptConstraints(constrainedPropertiesEntries, locale)
-        String messages = jqueryValidationService.createJavaScriptMessages(constrainedPropertiesEntries, locale)
+        String messages = jqueryValidationService.createJavaScriptMessages(constrainedPropertiesEntries, form, locale)
         out << render(plugin: 'jqueryValidationUi', template: '/taglib/renderValidationScript', 
             model: [
                 form: form, onkeyup: onkeyup, errorClass: errorClass, 
