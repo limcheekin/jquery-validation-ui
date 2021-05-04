@@ -1153,7 +1153,7 @@ $.extend($.validator, {
 					var valid = response === true || response === "true";
 					if ( valid ) {
 						var submitted = validator.formSubmitted;
-						validator.prepareElement(element);
+						//validator.prepareElement(element);
 						validator.formSubmitted = submitted;
 						validator.successList.push(element);
 						delete validator.invalid[element.name];
