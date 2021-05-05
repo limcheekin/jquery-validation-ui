@@ -97,7 +97,7 @@ class JqueryValidationService {
 		return javaScriptConstraints.toString()
 	}
 	
-	String createJavaScriptMessages(List constrainedPropertiesEntries, Locale locale) {
+	String createJavaScriptMessages(List constrainedPropertiesEntries, String formName, Locale locale) {
 		FastStringWriter javaScriptMessages = new FastStringWriter(VALIDATION_MESSAGE_LENGTH * constrainedPropertiesEntries.size())
 		String namespacedPropertyName
 		def constrainedPropertyValues
@@ -107,7 +107,7 @@ class JqueryValidationService {
 			constrainedPropertyValues.eachWithIndex { constrainedProperty, propertyIndex  ->
 				namespacedPropertyName = constrainedPropertiesEntry.namespace?"'${constrainedPropertiesEntry.namespace}.${constrainedProperty.propertyName}'":constrainedProperty.propertyName
 				javaScriptMessages << "${namespacedPropertyName}: "
-				javaScriptMessages << _createJavaScriptMessages(constrainedProperty, locale, constrainedPropertiesEntry.namespace)
+				javaScriptMessages << _createJavaScriptMessages(constrainedProperty, formName, locale, constrainedPropertiesEntry.namespace)
        if (entryIndex == constrainedPropertiesEntries.size() - 1 && 
 		       propertyIndex == constrainedPropertyValues.size() - 1) {
 				  javaScriptMessages << "\n" 
@@ -167,16 +167,17 @@ class JqueryValidationService {
 	}        
 	
 	private String createRemoteJavaScriptConstraints(String contextPath, String constraintName, String validatableClassName, String propertyName) {
-		String remoteJavaScriptConstraints = "\t${constraintName.equals('unique') || constraintName.equals('validator')?constraintName:'custom'}: {\n" +
+		String remoteJavaScriptConstraints = "\t${constraintName.equals('unique') || constraintName.equals('validator')?'remote':'custom'}: {\n" +
 				"\turl: '${contextPath}/JQueryRemoteValidator/validate',\n" +
+				"\tasync: false,\n" +
 				"\ttype: 'post',\n" +
 				"\tdata: {\n" +
 				"\t\tvalidatableClass: '${validatableClassName}',\n" +
 				"\t\tproperty: '${propertyName}'"
 		
-		if (!constraintName.equals('unique') && !constraintName.equals('validator')) {
+		//if (!constraintName.equals('unique') && !constraintName.equals('validator')) {
 			remoteJavaScriptConstraints += ",\n\t\tconstraint: '${constraintName}'"
-		}
+		//}
 		
 		if (constraintName.equals('unique')) {
 			def conf = grailsApplication.config.jqueryValidationUi.flatten()
@@ -219,7 +220,7 @@ class JqueryValidationService {
 		return message.encodeAsJavaScript()
 	}
 	
-	private String getMessage(Class validatableClass, String propertyName, def args, String constraintName, Locale locale) {
+	String getMessage(Class validatableClass, String propertyName, String formName, List args, String constraintName, Locale locale) {
 		def code = "${validatableClass.name}.${propertyName}.${constraintName}"
 		def defaultMessage = "Error message for ${code} undefined."
 		def message = messageSource.getMessage(code, args == null ? null : args.toArray(), null, locale)
@@ -240,76 +241,65 @@ class JqueryValidationService {
 			message = messageSource.getMessage(code, args == null ? null : args.toArray(), defaultMessage, locale)
 		}
 
-		return message.encodeAsJavaScript().replace(VALUE_PLACEHOLDER.encodeAsJavaScript(), "' + \$('#${propertyName}').val() + '")
+		return message.encodeAsJavaScript().replace(VALUE_PLACEHOLDER.encodeAsJavaScript(), "' + \$('form[name=${formName}] [name=${propertyName}]').val() + '")
 	}        
 	
 	private String _createJavaScriptConstraints(def constrainedProperty, Locale locale, String namespace, boolean forMetadata) {
-		FastStringWriter javaScriptConstraints = new FastStringWriter(forMetadata ? VALIDATION_RULE_LENGTH : VALIDATION_RULE_LENGTH + VALIDATION_MESSAGE_LENGTH)
 		def constraintsMap
 		String javaScriptConstraint
-		String javaScriptConstraintCode
+		def constraintsCodeList = []
 		
-		javaScriptConstraints << "{ "
 		constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
 		def constraintNames = getConstraintNames(constrainedProperty)
 		
 		switch (constrainedProperty.propertyType) {
 			case Date:
-				javaScriptConstraintCode = "date: true"
+				constraintsCodeList << "date: true"
 				break
 			case Long:
 			case Integer:
 			case Short:
 			case BigInteger:
-				javaScriptConstraintCode = "digits: true"
+				constraintsCodeList << "digits: true"
 				break
 			case Float:
 			case Double:
 			case BigDecimal:
-				javaScriptConstraintCode = "${(locale.country == 'br' || locale.country == 'de')?'numberDE':'number'}: true"
+				constraintsCodeList << "${(locale.country == 'br' || locale.country == 'de')?'numberDE':'number'}: true"
 				break
 		}
 		
-		if (javaScriptConstraintCode) {
-			javaScriptConstraints << javaScriptConstraintCode
-			if (constraintNames.size() > 0) {
-				javaScriptConstraints << ", "
-			} else {
-				javaScriptConstraints << " "
-			}
-		}
 		constraintNames.eachWithIndex { constraintName, i ->
 			javaScriptConstraint = constraintsMap[constraintName]
-			javaScriptConstraintCode = null
 			if (javaScriptConstraint) {
 				switch (constraintName) {
 					case "nullable":
 						if (!constrainedProperty.isNullable()) {
-							javaScriptConstraintCode = "${javaScriptConstraint}: true"
+							constraintsCodeList << "${javaScriptConstraint}: true"
 						}
 						break
 					case "blank":
 						if (!constrainedProperty.isBlank()) {
-							javaScriptConstraintCode = "${javaScriptConstraint}: true"
+							constraintsCodeList << "${javaScriptConstraint}: true"
 						}
 						break
 					case "creditCard":
 						if (constrainedProperty.isCreditCard()) {
-							javaScriptConstraintCode = "${javaScriptConstraint}: true"
+							constraintsCodeList << "${javaScriptConstraint}: true"
 						}
 						break
 					case "email":
 						if (constrainedProperty.isEmail()) {
-							javaScriptConstraintCode = "${javaScriptConstraint}: true"
+							constraintsCodeList << "${javaScriptConstraint}: true"
 						}
 						break
 					case "url":
 						if (constrainedProperty.isUrl()) {
-							javaScriptConstraintCode = "${javaScriptConstraint}: true"
+							constraintsCodeList << "${javaScriptConstraint}: true"
 						}
 						break
 					case "inList":
-						javaScriptConstraintCode = "${javaScriptConstraint}: ["
+						String javaScriptConstraintCode = "${javaScriptConstraint}: ["
 						if (constrainedProperty.propertyType == Date) {
 							constrainedProperty.inList.eachWithIndex { val, listIndex ->
 								javaScriptConstraintCode += "new Date(${val.time})"
@@ -322,201 +312,169 @@ class JqueryValidationService {
 							}
 						}
 						javaScriptConstraintCode += "]"
+						constraintsCodeList << javaScriptConstraintCode
 						break
 					case "matches":
-						javaScriptConstraintCode = "${javaScriptConstraint}: '${constrainedProperty.matches.replaceAll('\\\\', '\\\\\\\\')}'"
+						constraintsCodeList << "${javaScriptConstraint}: '${constrainedProperty.matches.replaceAll('\\\\', '\\\\\\\\')}'"
 						break
 					case "max":
-						javaScriptConstraintCode = "${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.max.time})" : constrainedProperty.max}"
-					break
-				case "maxSize":
-					javaScriptConstraintCode = "${javaScriptConstraint}: ${constrainedProperty.maxSize}"
-					break
-				case "min":
-					javaScriptConstraintCode = "${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.min.time})" : constrainedProperty.min}"
-				break
-			case "minSize":
-				javaScriptConstraintCode = "${javaScriptConstraint}: ${constrainedProperty.minSize}"
-				break
-			case "notEqual":
-				javaScriptConstraintCode = "${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.notEqual.time})" : "'${constrainedProperty.notEqual}'"}"
-			break
-		case "range":
-			def range = constrainedProperty.range
-			if (constrainedProperty.propertyType == Date) {
-				javaScriptConstraintCode = "${javaScriptConstraint}: [new Date(${range.from.time}), new Date(${range.to.time})]"
-			} else {
-				javaScriptConstraintCode = "${javaScriptConstraint}: [${range.from}, ${range.to}]"
-			}
-			break
-		case "size":
-			def size = constrainedProperty.size
-			javaScriptConstraintCode = "${javaScriptConstraint}: [${size.from}, ${size.to}]"
-			break
-		case "unique":
-		case "validator":
-			javaScriptConstraintCode = createRemoteJavaScriptConstraints(RequestContextHolder.requestAttributes.contextPath, constraintName, constrainedProperty.owningClass.name, constrainedProperty.propertyName)
-			break
-	}
-} else {
-	def customConstraintsMap = grailsApplication.config.jqueryValidationUi.CustomConstraintsMap
-	if (customConstraintsMap && customConstraintsMap[constraintName]) {
-		javaScriptConstraintCode = "$constraintName: ${customConstraintsMap[constraintName]}"
-	} else {
-		log.info "${constraintName} constraint not found even in the CustomConstraintsMap, use custom constraint and remote validation"
-		javaScriptConstraintCode = createRemoteJavaScriptConstraints(RequestContextHolder.requestAttributes.contextPath, constraintName, constrainedProperty.owningClass.name, constrainedProperty.propertyName)
-	}
-}
-if (javaScriptConstraintCode) {
-	javaScriptConstraints << javaScriptConstraintCode
-	if (i < constraintNames.size() - 1) {
-		javaScriptConstraints << ", "
-	} else {
-		javaScriptConstraints << " "
-	}
-}
-}
+						constraintsCodeList << "${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.max.time})" : constrainedProperty.max}"
+					    break
+                    case "maxSize":
+                        constraintsCodeList << "${javaScriptConstraint}: ${constrainedProperty.maxSize}"
+                        break
+                    case "min":
+                        constraintsCodeList << "${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.min.time})" : constrainedProperty.min}"
+                        break
+                    case "minSize":
+                        constraintsCodeList << "${javaScriptConstraint}: ${constrainedProperty.minSize}"
+                        break
+                    case "notEqual":
+                        constraintsCodeList << "${javaScriptConstraint}: ${constrainedProperty.propertyType == Date ? "new Date(${constrainedProperty.notEqual.time})" : "'${constrainedProperty.notEqual}'"}"
+                        break
+                    case "range":
+                        def range = constrainedProperty.range
+                        if (constrainedProperty.propertyType == Date) {
+                            constraintsCodeList << "${javaScriptConstraint}: [new Date(${range.from.time}), new Date(${range.to.time})]"
+                        } else {
+                            constraintsCodeList << "${javaScriptConstraint}: [${range.from}, ${range.to}]"
+                        }
+                        break
+                    case "size":
+                        def size = constrainedProperty.size
+                        constraintsCodeList << "${javaScriptConstraint}: [${size.from}, ${size.to}]"
+                        break
+                    case "unique":
+                    case "validator":
+                        constraintsCodeList << createRemoteJavaScriptConstraints(RequestContextHolder.requestAttributes.contextPath, constraintName, constrainedProperty.owningClass.name, constrainedProperty.propertyName)
+                        break
+                }
+            } else {
+                def customConstraintsMap = grailsApplication.config.jqueryValidationUi.CustomConstraintsMap
+                if (customConstraintsMap && customConstraintsMap[constraintName]) {
+                    constraintsCodeList << "$constraintName: ${customConstraintsMap[constraintName]}"
+                } else {
+                    log.info "${constraintName} constraint not found even in the CustomConstraintsMap, use custom constraint and remote validation"
+                    constraintsCodeList << createRemoteJavaScriptConstraints(RequestContextHolder.requestAttributes.contextPath, constraintName, constrainedProperty.owningClass.name, constrainedProperty.propertyName)
+                }
+            }
+        }
 
-if (forMetadata) {
-	javaScriptConstraints << ", messages: ${_createJavaScriptMessages(constrainedProperty, locale, namespace)}"
-}
+        if (forMetadata) {
+            constraintsCodeList << "messages: ${_createJavaScriptMessages(constrainedProperty, locale, namespace)}"
+        }
 
-javaScriptConstraints << "}"
+        return "{ ${constraintsCodeList.join(", ")} }"
+    }
 
-return javaScriptConstraints.toString()
-}
+    private String _createJavaScriptMessages(def constrainedProperty, String formName, Locale locale, String namespace) {
+        def args = []
+        def javaScriptMessagesList = []
+        String javaScriptConstraint
+        def constraintNames
 
-private String _createJavaScriptMessages(def constrainedProperty, Locale locale, String namespace) {
-def args = []
-FastStringWriter javaScriptMessages = new FastStringWriter(VALIDATION_MESSAGE_LENGTH)
-String javaScriptConstraint
-def constraintNames
-String javaScriptMessageCode
+        def constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
+        constraintNames = getConstraintNames(constrainedProperty)
+        switch (constrainedProperty.propertyType) {
+            case Date:
+                javaScriptMessagesList << "date: '${getTypeMismatchMessage(constrainedProperty.owningClass, constrainedProperty.propertyType, namespace, constrainedProperty.propertyName, locale)}'"
+                break
+            case Long:
+            case Integer:
+            case Short:
+            case BigInteger:
+                javaScriptMessagesList << "digits: '${getTypeMismatchMessage(constrainedProperty.owningClass, constrainedProperty.propertyType, namespace, constrainedProperty.propertyName, locale)}'"
+                break
+            case Float:
+            case Double:
+            case BigDecimal:
+                if (locale.country == 'br' || locale.country == 'de')
+                    javaScriptMessagesList << "numberDE: '${getTypeMismatchMessage(constrainedProperty.owningClass, constrainedProperty.propertyType, namespace, constrainedProperty.propertyName, locale)}'"
+                else
+                    javaScriptMessagesList << "number: '${getTypeMismatchMessage(constrainedProperty.owningClass, constrainedProperty.propertyType, namespace, constrainedProperty.propertyName, locale)}'"
+                break
+            }
 
+            constraintNames.eachWithIndex { constraintName, i ->
+            javaScriptConstraint = constraintsMap[constraintName]
 
-def constraintsMap = getConstraintsMap(constrainedProperty.propertyType)
-javaScriptMessages << "{ "
-constraintNames = getConstraintNames(constrainedProperty)
-javaScriptMessageCode = null
-switch (constrainedProperty.propertyType) {
-case Date:
-	javaScriptMessageCode = "date: '${getTypeMismatchMessage(constrainedProperty.owningClass, constrainedProperty.propertyType, namespace, constrainedProperty.propertyName, locale)}'"
-	break
-case Long:
-case Integer:
-case Short:
-case BigInteger:
-	javaScriptMessageCode = "digits: '${getTypeMismatchMessage(constrainedProperty.owningClass, constrainedProperty.propertyType, namespace, constrainedProperty.propertyName, locale)}'"
-	break
-case Float:
-case Double:
-case BigDecimal:
-	if (locale.country == 'br' || locale.country == 'de')
-		javaScriptMessageCode = "numberDE: '${getTypeMismatchMessage(constrainedProperty.owningClass, constrainedProperty.propertyType, namespace, constrainedProperty.propertyName, locale)}'"
-	else
-		javaScriptMessageCode = "number: '${getTypeMismatchMessage(constrainedProperty.owningClass, constrainedProperty.propertyType, namespace, constrainedProperty.propertyName, locale)}'"
-	break
-}
+            args.clear()
+            args = [constrainedProperty.propertyName, constrainedProperty.owningClass]
+            if (javaScriptConstraint) {
+                switch (constraintName) {
+                    case "nullable":
+                        if (!constrainedProperty.isNullable()) {
+                            javaScriptMessagesList << "${javaScriptConstraint}: '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, formName, args, constraintName, locale)}'"
+                        }
+                    case "blank":
+                        if (!constrainedProperty.isBlank()) {
+                            javaScriptMessagesList << "${javaScriptConstraint}: '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, formName, args, constraintName, locale)}'"
+                        }
+                        break
+                    case "creditCard":
+                    case "email":
+                    case "url":
+                        if (constrainedProperty.isCreditCard() || constrainedProperty.isEmail() || constrainedProperty.isUrl()) {
+                            args << VALUE_PLACEHOLDER
+                            javaScriptMessagesList << "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, formName, args, constraintName, locale)}'; }"
+                        }
+                        break
+                    case "inList":
+                    case "matches":
+                    case "max":
+                    case "maxSize":
+                    case "min":
+                    case "minSize":
+                    case "notEqual":
+                        args << VALUE_PLACEHOLDER
+                        args << constrainedProperty."${constraintName}"
+                        javaScriptMessagesList << "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, formName, args, constraintName, locale)}'; }"
+                        break
 
-if (javaScriptMessageCode) {
-javaScriptMessages << javaScriptMessageCode
-if (constraintNames.size() > 0) {
-	javaScriptMessages << ", "
-} else {
-	javaScriptMessages << " "
-}
-}
+                    case "range":
+                    case "size":
+                        args << VALUE_PLACEHOLDER
+                        def range = constrainedProperty."${constraintName}"
+                        args << range.from
+                        args << range.to
+                        javaScriptMessagesList << "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, formName, args, constraintName, locale)}'; }"
+                        break
 
-constraintNames.eachWithIndex { constraintName, i ->
-javaScriptConstraint = constraintsMap[constraintName]
-javaScriptMessageCode = null
-args.clear()
-args = [constrainedProperty.propertyName, constrainedProperty.owningClass]
-if (javaScriptConstraint) {
-	switch (constraintName) {
-		case "nullable":
-			if (!constrainedProperty.isNullable()) {
-				javaScriptMessageCode = "${javaScriptConstraint}: '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'"
-			}
-		case "blank":
-			if (!constrainedProperty.isBlank()) {
-				javaScriptMessageCode = "${javaScriptConstraint}: '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'"
-			}
-			break
-		case "creditCard":
-		case "email":
-		case "url":
-			if (constrainedProperty.isCreditCard() || constrainedProperty.isEmail() || constrainedProperty.isUrl()) {
-				args << VALUE_PLACEHOLDER
-				javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }"
-			}
-			break
-		case "inList":
-		case "matches":
-		case "max":
-		case "maxSize":
-		case "min":
-		case "minSize":
-		case "notEqual":
-			args << VALUE_PLACEHOLDER
-			args << constrainedProperty."${constraintName}"
-			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }"
-			break
-		
-		case "range":
-		case "size":
-			args << VALUE_PLACEHOLDER
-			def range = constrainedProperty."${constraintName}"
-			args << range.from
-			args << range.to
-			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }"
-			break
-		
-		case "unique":
-		case "validator":
-			args << VALUE_PLACEHOLDER
-			javaScriptMessageCode = "${javaScriptConstraint}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }"
-			break
-	}
-} else {
-	def customConstraintsMap = grailsApplication.config.jqueryValidationUi.CustomConstraintsMap
-	if (customConstraintsMap && customConstraintsMap[constraintName]) {
-		args << VALUE_PLACEHOLDER
-		javaScriptMessageCode = "${constraintName}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, args, constraintName, locale)}'; }"
-	} // else remote validation, using remote message.
-}
-if (javaScriptMessageCode) {
-	javaScriptMessages << javaScriptMessageCode
-	if (i < constraintNames.size() - 1) {
-		javaScriptMessages << ", "
-	} else {
-		javaScriptMessages << " "
-	}
-}
-}
-javaScriptMessages << "}"
+                    case "unique":
+                    case "validator":
+                        args << VALUE_PLACEHOLDER
+                        javaScriptMessagesList << "remote: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, formName, args, constraintName, locale)}'; }"
+                        break
+                }
+            } else {
+                def customConstraintsMap = grailsApplication.config.jqueryValidationUi.CustomConstraintsMap
+                if (customConstraintsMap && customConstraintsMap[constraintName]) {
+                    args << VALUE_PLACEHOLDER
+                    javaScriptMessagesList << "${constraintName}: function() { return '${getMessage(constrainedProperty.owningClass, constrainedProperty.propertyName, formName, args, constraintName, locale)}'; }"
+                } // else remote validation, using remote message.
+            }
+        }
+        return "{ ${javaScriptMessagesList.join(", ")} }"
+    }
 
-return javaScriptMessages.toString()
-}
+    private _getConstrainedProperties(DefaultGrailsDomainClass domainClass, String[] properties) {
+        def constrainedProperties = domainClass.constrainedProperties.findAll{ k, v -> properties.contains(k) }
+        def childConstrainedProperties
+        def dotProperties = properties.findAll { it.indexOf('.') > -1 } // nested/embedded class
+        def dotPropertiesValues = dotProperties.collect {  it.substring(0, it.indexOf('.')) }.unique()
+        def dotConstrainedProperties = domainClass.constrainedProperties.findAll{ k, v -> dotPropertiesValues.contains(k) }
+        dotConstrainedProperties.each { propertyName, constrainedProperty ->
+        childConstrainedProperties = getConstrainedProperties(constrainedProperty.propertyType).findAll{ k, v -> dotProperties.contains("$propertyName.$k" as String) } // contains() only work after converted to String
+            childConstrainedProperties.each { k, v ->
+                constrainedProperties["$propertyName.$k" as String] = v
+            }
+        }
 
-private _getConstrainedProperties(DefaultGrailsDomainClass domainClass, String[] properties) {
-	def constrainedProperties = domainClass.constrainedProperties.findAll{ k, v -> properties.contains(k) }
-	def childConstrainedProperties
-	def dotProperties = properties.findAll { it.indexOf('.') > -1 } // nested/embedded class
-	def dotPropertiesValues = dotProperties.collect {  it.substring(0, it.indexOf('.')) }.unique()
-	def dotConstrainedProperties = domainClass.constrainedProperties.findAll{ k, v -> dotPropertiesValues.contains(k) }
-	dotConstrainedProperties.each { propertyName, constrainedProperty ->
-	childConstrainedProperties = getConstrainedProperties(constrainedProperty.propertyType).findAll{ k, v -> dotProperties.contains("$propertyName.$k" as String) } // contains() only work after converted to String
-		childConstrainedProperties.each { k, v ->
-			constrainedProperties["$propertyName.$k" as String] = v
-		}
-	}
-	
-	/*constrainedProperties.each { k, v ->
-	 println "* $k = $v"
-	 }*/
-	
-	return constrainedProperties
-}
+        /*constrainedProperties.each { k, v ->
+         println "* $k = $v"
+         }*/
+
+        return constrainedProperties
+    }
 
 }

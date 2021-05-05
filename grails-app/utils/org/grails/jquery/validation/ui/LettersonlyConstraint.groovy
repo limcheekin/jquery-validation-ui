@@ -27,6 +27,6 @@ class LettersonlyConstraint {
 	}
 	
   def validate = { propertyValue ->
-    return propertyValue ==~ /^[a-z]+$/
+    return propertyValue ==~ /^[a-zA-Z]+$/
     }
 }

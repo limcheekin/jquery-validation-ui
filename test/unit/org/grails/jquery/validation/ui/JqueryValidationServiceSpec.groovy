@@ -19,7 +19,7 @@ public class JqueryValidationServiceSpec extends Specification {
 		service.messageSource = messageSource
 
 		when:
-		def message = service.getMessage(this.class, "prop", null, "max", null)
+		def message = service.getMessage(this.class, "prop", null, null, "max", null)
 
 		then:
 		1 * messageSource.getMessage("${this.class.name}.prop.max", null, null, null) >> "my 'message'"
